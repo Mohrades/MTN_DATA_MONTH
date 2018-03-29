@@ -3,9 +3,12 @@ package handling;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+
+import com.google.common.base.Splitter;
 
 import connexions.AIRRequest;
 import dao.DAO;
@@ -36,17 +39,55 @@ public class InputHandler {
 		// entry
 		if(ussd == null) {
 			if(parameters.get("input").equals(short_code + "*1")) {
-				entryStep(dao, new USSD(0, sessionId, parameters.get("msisdn"), "1=1&2=", 2, new Date()), modele, "Veuillez choisir le volume a offir\n\n" + "1- 100Mo\n2- 250Mo\n3- 500Mo\n4- 1.5Go\n5- 3.5Go\n6- 5Go");
+				if((new NumberValidator()).isFiltered(dao, webAppProperties, parameters.get("msisdn"), "A")) {
+					entryStep(dao, new USSD(0, sessionId, parameters.get("msisdn"), "1=1&2=", 2, new Date()), modele, "Veuillez choisir le volume a offir\n\n" + "1- 100Mo\n2- 250Mo\n3- 500Mo\n4- 1.5Go\n5- 3.5Go\n6- 5Go");
+				}
+				else {
+					endStep(dao, ussd, modele, "Vous n'etes pas autorise(e) a utiliser ce menu", null, null, null, null);
+				}
 			}
 			else if(parameters.get("input").equals(short_code + "*2")) {
 				// envoie SMS de statut
 				statut(webAppProperties, dao, null, modele, parameters.get("msisdn"));
 			}
 			else if(parameters.get("input").equals(short_code + "*1*1") || parameters.get("input").equals(short_code + "*1*2") || parameters.get("input").equals(short_code + "*1*3") || parameters.get("input").equals(short_code + "*1*4") || parameters.get("input").equals(short_code + "*1*5") || parameters.get("input").equals(short_code + "*1*6")) {
-				entryStep(dao, new USSD(0, sessionId, parameters.get("msisdn"), "1=1&2=" + Integer.parseInt(parameters.get("input").substring(6, 7)) + "&3=", 3, new Date()), modele, "Veuillez entrer le numero");
+				if((new NumberValidator()).isFiltered(dao, webAppProperties, parameters.get("msisdn"), "A")) {
+					entryStep(dao, new USSD(0, sessionId, parameters.get("msisdn"), "1=1&2=" + Integer.parseInt(parameters.get("input").substring(6, 7)) + "&3=", 3, new Date()), modele, "Veuillez entrer le numero");
+				}
+				else {
+					endStep(dao, ussd, modele, "Vous n'etes pas autorise(e) a utiliser ce menu", null, null, null, null);
+				}
+			}
+			else if(parameters.get("input").startsWith(short_code + "*1*1*") || parameters.get("input").startsWith(short_code + "*1*2*") || parameters.get("input").startsWith(short_code + "*1*3*") || parameters.get("input").startsWith(short_code + "*1*4*") || parameters.get("input").startsWith(short_code + "*1*5*") || parameters.get("input").startsWith(short_code + "*1*6*")) {
+				try {
+					List<String> inputs = Splitter.onPattern("[*]").trimResults().omitEmptyStrings().splitToList(parameters.get("input"));
+
+					if(inputs.size() == 4) {
+						USSD ussd1 = new USSD();
+						ussd1.setInput("1=1&2=" + parameters.get("input").substring(short_code.length() + 3, short_code.length() + 4) + "&3=");
+						sharing(dao, ussd1, webAppProperties, modele, parameters, Long.parseLong(inputs.get(3)));
+					}
+					else {
+						throw new Exception();
+					}
+					
+				} catch(NumberFormatException ex) {
+					endStep(dao, ussd, modele, "Votre requete est erronee", null, null, null, null);
+
+				} catch(Exception ex) {
+					endStep(dao, ussd, modele, "Votre requete est erronee", null, null, null, null);
+
+				} catch(Throwable ex) {
+					endStep(dao, ussd, modele, "Votre requete est erronee", null, null, null, null);
+				}
 			}
 			else if(parameters.get("input").equals(short_code)) {
-				entryStep(dao, new USSD(0, sessionId, parameters.get("msisdn"), "1=", 1, new Date()), modele, "Bienvenue sur le service Data Month\n\n" + "1- Partager\n2- Statut");
+				if((new NumberValidator()).isFiltered(dao, webAppProperties, parameters.get("msisdn"), "A")) {
+					entryStep(dao, new USSD(0, sessionId, parameters.get("msisdn"), "1=", 1, new Date()), modele, "Bienvenue sur le service Data Month\n\n" + "1- Partager\n2- Statut");
+				}
+				else {
+					entryStep(dao, new USSD(0, sessionId, parameters.get("msisdn"), "1=", 1, new Date()), modele, "Bienvenue sur le service Data Month\n\n" + "2- Statut");
+				}
 			}
 			else {
 				endStep(dao, ussd, modele, "Votre requete est erronee", null, null, null, null);
@@ -87,58 +128,7 @@ public class InputHandler {
 				}
 
 				else if(ussd.getInput().equals("1=1&2=1&3=") || ussd.getInput().equals("1=1&2=2&3=") || ussd.getInput().equals("1=1&2=3&3=") || ussd.getInput().equals("1=1&2=4&3=") || ussd.getInput().equals("1=1&2=5&3=") || ussd.getInput().equals("1=1&2=6&3=")) {
-					// validate choice as msisdn
-					/*if(((choice+"").length() == 11) && ((choice+"").startsWith("229"))) {*/
-					if(new NumberValidator().onNet(webAppProperties, webAppProperties.getMcc() + "" + choice)) {
-						// check parameters.get("msisdn") is allowed
-						if((new NumberValidator()).isFiltered(dao, webAppProperties, parameters.get("msisdn"), "A")) {
-							// check choice is allowed
-							if((new NumberValidator()).isFiltered(dao, webAppProperties, webAppProperties.getMcc() + "" + choice, "B")) {
-								// check cumulated data is less or equal than 5Go
-								Sharing sharing = new SharingDAOJdbc(dao).getOneSharing(webAppProperties.getMcc() + "" + choice);
-
-								long volume_data = 0;
-
-								try {
-									volume_data = Long.parseLong(webAppProperties.getData_volume().get(Integer.parseInt(ussd.getInput().substring(6, 7)) - 1));
-
-								} catch(NullPointerException ex) {
-									
-								} catch(NumberFormatException ex) {
-									
-								} catch(Exception ex) {
-
-								} catch(Throwable th) {
-
-								}
-
-								if((volume_data > 0) && ((sharing == null) || ((sharing.getValue() + volume_data) <= (webAppProperties.getSharing_data_volume_limit())))) {
-									// int choice = Integer.parseInt(parameters.get("imput").substring(6, 7));
-									if(sharing(webAppProperties, dao, parameters.get("msisdn"), webAppProperties.getMcc() + "" + choice, Integer.parseInt(ussd.getInput().substring(6, 7)))) {
-										String date = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
-										String volume = volume_data / (10*100) + "";
-
-										endStep(dao, ussd, modele, "Vous avez envoye avec succes " + volume + "Mo au " + choice + " le " + date + ". Votre Volume Internet expire le " + "31-05-2018 a 23:59", parameters.get("msisdn"), "Vous avez recu avec succes " + volume + "Mo du " + parameters.get("msisdn") + " le " + date + ". Votre Volume Internet expire le " + "31-05-2018 a 23:59. Pour verifier, tapez: *124*DA#", choice+"", "STAFFDATA");
-									}
-									else {
-										endStep(dao, ussd, modele, "Y'ello, Votre requete ne peut etre traite. Veuillez reesayer plus tard...", null, null, null, null);
-									}
-								}
-								else {
-									endStep(dao, ussd, modele, "Y'ello, le numero " + (choice+"") + " ne peut pas recevoir le volume Data choisi", null, null, null, null);
-								}
-							}
-							else {
-								endStep(dao, ussd, modele, "Y'ello, le numero " + (choice+"") + " n'est pas autorise a recevoir de volume Data", null, null, null, null);
-							}
-						}
-						else {
-							endStep(dao, ussd, modele, "Y'ello, vous ne pouvez pas partager de volume Data", null, null, null, null);
-						}
-					}
-					else {
-						endStep(dao, ussd, modele, "Veuillez entrer un numero MTN valide", null, null, null, null);
-					}
+					sharing(dao, ussd, webAppProperties, modele, parameters, choice);
 				}
 
 				else {
@@ -171,8 +161,25 @@ public class InputHandler {
 			endStep(dao, ussd, modele, "Desole, vous n'avez pas de volume Data", null, null, null, null);
 		}
 		else {
-			endStep(dao, ussd, modele, "votre volume Data est de " + (balance.getAccountValue()/(10*100)) + "Mo et est valable jusqu'au 31/05/2018 a 23:59", null, null, null, null);
-			// balance.getExpiryDate();
+			String expires = (new SimpleDateFormat("dd/MM/yyyy HH:mm")).format(balance.getExpiryDate());
+
+			long units = (balance.getAccountValue()/(10*100));
+			if(units >= 1024) {
+				double gigas = (double)units/1024;
+				String giga = gigas + "";
+				
+				try {
+					giga = giga.substring(0, giga.indexOf(".")+3);
+
+				} catch(Throwable th) {
+					giga = giga.substring(0, giga.indexOf(".")+2);
+				}
+
+				endStep(dao, ussd, modele, "Votre volume Data est de " + giga + "Go et est valable jusqu'au " + expires, null, null, null, null);
+			}
+			else {
+				endStep(dao, ussd, modele, "Votre volume Data est de " + units + "Mo et est valable jusqu'au " + expires, null, null, null, null);
+			}
 		}
 	}
 
@@ -287,6 +294,61 @@ public class InputHandler {
 		}
 
 		new USSDDAOJdbc(dao).saveOneUSSD(ussd);
+	}
+	
+	public void sharing(DAO dao, USSD ussd, WebAppProperties webAppProperties, Map<String, Object> modele, Map<String, String> parameters, long choice) {
+		// validate choice as msisdn
+		/*if(((choice+"").length() == 11) && ((choice+"").startsWith("229"))) {*/
+		if(new NumberValidator().onNet(webAppProperties, webAppProperties.getMcc() + "" + choice)) {
+			// check parameters.get("msisdn") is allowed
+			if((new NumberValidator()).isFiltered(dao, webAppProperties, parameters.get("msisdn"), "A")) {
+				// check choice is allowed
+				if((new NumberValidator()).isFiltered(dao, webAppProperties, webAppProperties.getMcc() + "" + choice, "B")) {
+					// check cumulated data is less or equal than 5Go
+					Sharing sharing = new SharingDAOJdbc(dao).getOneSharing(webAppProperties.getMcc() + "" + choice);
+
+					long volume_data = 0;
+
+					try {
+						volume_data = Long.parseLong(webAppProperties.getData_volume().get(Integer.parseInt(ussd.getInput().substring(6, 7)) - 1));
+
+					} catch(NullPointerException ex) {
+						
+					} catch(NumberFormatException ex) {
+						
+					} catch(Exception ex) {
+
+					} catch(Throwable th) {
+
+					}
+
+					if((volume_data > 0) && ((sharing == null) || ((sharing.getValue() + volume_data) <= (webAppProperties.getSharing_data_volume_limit())))) {
+						// int choice = Integer.parseInt(parameters.get("imput").substring(6, 7));
+						if(sharing(webAppProperties, dao, parameters.get("msisdn"), webAppProperties.getMcc() + "" + choice, Integer.parseInt(ussd.getInput().substring(6, 7)))) {
+							String date = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+							String volume = volume_data / (10*100) + "";
+
+							endStep(dao, ussd, modele, "Vous avez envoye avec succes " + volume + "Mo au " + choice + " le " + date + ". Votre Volume Internet expire le " + "31-05-2018 a 23:59", parameters.get("msisdn"), "Vous avez recu avec succes " + volume + "Mo du " + parameters.get("msisdn") + " le " + date + ". Votre Volume Internet expire le " + "31-05-2018 a 23:59. Pour verifier, tapez: *124*DA#", choice+"", "STAFFDATA");
+						}
+						else {
+							endStep(dao, ussd, modele, "Y'ello, Votre requete ne peut etre traite. Veuillez reesayer plus tard...", null, null, null, null);
+						}
+					}
+					else {
+						endStep(dao, ussd, modele, "Y'ello, le numero " + (choice+"") + " ne peut pas recevoir le volume Data choisi", null, null, null, null);
+					}
+				}
+				else {
+					endStep(dao, ussd, modele, "Y'ello, le numero " + (choice+"") + " n'est pas autorise a recevoir de volume Data", null, null, null, null);
+				}
+			}
+			else {
+				endStep(dao, ussd, modele, "Y'ello, vous ne pouvez pas partager de volume Data", null, null, null, null);
+			}
+		}
+		else {
+			endStep(dao, ussd, modele, "Veuillez entrer un numero MTN valide", null, null, null, null);
+		}		
 	}
 
 }
