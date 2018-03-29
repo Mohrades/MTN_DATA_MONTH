@@ -31,20 +31,21 @@ public class InputHandler {
 		long sessionId = Long.parseLong(parameters.get("sessionid"));
 
 		USSD ussd = new USSDDAOJdbc(dao).getOneUSSD(sessionId, parameters.get("msisdn"));
+		String short_code = webAppProperties.getSc() + "";
 
 		// entry
 		if(ussd == null) {
-			if(parameters.get("input").equals("250*1")) {
+			if(parameters.get("input").equals(short_code + "*1")) {
 				entryStep(dao, new USSD(0, sessionId, parameters.get("msisdn"), "1=1&2=", 2, new Date()), modele, "Veuillez choisir le volume a offir\n\n" + "1- 100Mo\n2- 250Mo\n3- 500Mo\n4- 1.5Go\n5- 3.5Go\n6- 5Go");
 			}
-			else if(parameters.get("input").equals("250*2")) {
+			else if(parameters.get("input").equals(short_code + "*2")) {
 				// envoie SMS de statut
 				statut(webAppProperties, dao, null, modele, parameters.get("msisdn"));
 			}
-			else if(parameters.get("input").equals("250*1*1") || parameters.get("input").equals("250*1*2") || parameters.get("input").equals("250*1*3") || parameters.get("input").equals("250*1*4") || parameters.get("input").equals("250*1*5") || parameters.get("input").equals("250*1*6")) {
+			else if(parameters.get("input").equals(short_code + "*1*1") || parameters.get("input").equals(short_code + "*1*2") || parameters.get("input").equals(short_code + "*1*3") || parameters.get("input").equals(short_code + "*1*4") || parameters.get("input").equals(short_code + "*1*5") || parameters.get("input").equals(short_code + "*1*6")) {
 				entryStep(dao, new USSD(0, sessionId, parameters.get("msisdn"), "1=1&2=" + Integer.parseInt(parameters.get("input").substring(6, 7)) + "&3=", 3, new Date()), modele, "Veuillez entrer le numero");
 			}
-			else if(parameters.get("input").equals("250")) {
+			else if(parameters.get("input").equals(short_code)) {
 				entryStep(dao, new USSD(0, sessionId, parameters.get("msisdn"), "1=", 1, new Date()), modele, "Bienvenue sur le service Data Month\n\n" + "1- Partager\n2- Statut");
 			}
 			else {
@@ -62,7 +63,7 @@ public class InputHandler {
 						nextStep(dao, ussd, parameters, false);
 
 						modele.put("next", true);
-						modele.put("message", "Veuillez choisir le volume a offir\n\n" + "1- 100Mo\n2- 250Mo\n3- 500Mo\n4- 1.5Go\n5- 3.5Go\n6- 5Go");						
+						modele.put("message", "Veuillez choisir le volume a offrir\n\n" + "1- 100Mo\n2- 250Mo\n3- 500Mo\n4- 1.5Go\n5- 3.5Go\n6- 5Go");						
 					}
 					else if(choice == 2) {
 						// envoie SMS de statut
@@ -213,7 +214,7 @@ public class InputHandler {
 				balances.add(new DedicatedAccount((int) webAppProperties.getBnumber_da(), volume_data, expires));
 
 				// update Bnumber Balance
-				if(new AIRRequest().updateBalanceAndDate(Bnumber, balances, "TEST", "TEST", "ebafrique")) {
+				if(new AIRRequest().updateBalanceAndDate(Bnumber, balances, "TEST", "TEST", "eBA")) {
 					// update Bnumber sharing
 					Sharing sharing = new SharingDAOJdbc(dao).getOneSharing(Bnumber);
 					if(sharing == null) {
@@ -262,7 +263,7 @@ public class InputHandler {
 
 		modele.put("next", false);
 		modele.put("message", messageA);
-		
+
 		if(senderName != null) {
 			if(Anumber != null) {
 				if(Anumber.startsWith("229")) Anumber = Anumber.substring(3);

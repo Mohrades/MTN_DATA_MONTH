@@ -14,6 +14,9 @@ public class WebAppProperties implements InitializingBean, DisposableBean {
 
 	@Value("#{appConfig['gsm.mcc']}")
 	private short mcc;
+	
+	@Value("#{appConfig['gsm.short_code']}")
+	private short sc;
 
 	private List<String> mnc;
 
@@ -113,6 +116,10 @@ public class WebAppProperties implements InitializingBean, DisposableBean {
 
 	public short getMcc() {
 		return mcc;
+	}
+
+	public short getSc() {
+		return sc;
 	}
 
 	public List<String> getMnc() {
