@@ -17,21 +17,14 @@ import dao.domain.model.Sharing;
 import dao.domain.model.USSD;
 import env.WebAppProperties;
 import filter.NumberValidator;
+import sms.SMPPConnector;
 import util.BalanceAndDate;
 import util.DedicatedAccount;
 
 public class InputHandler {
 
-	/*HashMap<Integer, Long> sharings = null;*/
-
 	public InputHandler() {
-		/*sharings = new HashMap<Integer, Long>();
-		sharings.put(1, (long) (100*10*100));
-		sharings.put(2, (long) (250*10*100));
-		sharings.put(3, (long) (500*10*100));
-		sharings.put(4, (long) (1.5*1024*10*100));
-		sharings.put(5, (long) (3.5*1024*10*100));
-		sharings.put(6, (long) (5*1024*10*100));*/
+
 	}
 
 	public void handle(WebAppProperties webAppProperties, Map<String, String> parameters, Map<String, Object> modele, HttpServletRequest request, DAO dao) {
@@ -124,7 +117,7 @@ public class InputHandler {
 										String date = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
 										String volume = volume_data / (10*100) + "";
 
-										endStep(dao, ussd, modele, "Vous avez envoye avec succes " + volume + "Mo au " + choice + " le " + date + ". Votre Volume Internet expire le " + "31-05-2018 a 23:59", parameters.get("msisdn"), "Vous avez recu avec succes " + volume + "Mo du " + parameters.get("msisdn") + " le " + date + ". Votre Volume Internet expire le " + "31-05-2018 a 23:59. Pour verifier, tapez: *124*DA#", choice+"", "Data-Month");
+										endStep(dao, ussd, modele, "Vous avez envoye avec succes " + volume + "Mo au " + choice + " le " + date + ". Votre Volume Internet expire le " + "31-05-2018 a 23:59", parameters.get("msisdn"), "Vous avez recu avec succes " + volume + "Mo du " + parameters.get("msisdn") + " le " + date + ". Votre Volume Internet expire le " + "31-05-2018 a 23:59. Pour verifier, tapez: *124*DA#", choice+"", "STAFFDATA");
 									}
 									else {
 										endStep(dao, ussd, modele, "Y'ello, Votre requete ne peut etre traite. Veuillez reesayer plus tard...", null, null, null, null);
@@ -272,10 +265,12 @@ public class InputHandler {
 		
 		if(senderName != null) {
 			if(Anumber != null) {
-
+				if(Anumber.startsWith("229")) Anumber = Anumber.substring(3);
+				new SMPPConnector().submitSm(senderName, Anumber, messageA);
 			}
 			if(Bnumber != null) {
-
+				if(Bnumber.startsWith("229")) Bnumber = Bnumber.substring(3);
+				new SMPPConnector().submitSm(senderName, Bnumber, messageB);
 			}
 		}
 	}
