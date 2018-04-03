@@ -1,13 +1,16 @@
 package handling;
 
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +25,9 @@ import env.WebAppProperties;
 @Controller
 @RequestMapping(value={"/*"})
 public class USSDRequestHandler {
+	
+	@Autowired
+	private MessageSource i18n;
 
 	@Autowired
 	private DAO dao;
@@ -42,6 +48,7 @@ public class USSDRequestHandler {
 		return handleUSSDRequest(request, response);
 	}
 
+	@SuppressWarnings("deprecation")
 	public ModelAndView handleUSSDRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		Map<String, String> headers = new USSDRequest().GetHeaders(request);
 		Map<String, String> parameters = new USSDRequest().GetParameters(request, false);
@@ -50,21 +57,30 @@ public class USSDRequestHandler {
 		Map<String, Object> modele = new HashMap<String, Object>();
 
 		try {
-			if(parameters.isEmpty()) {
+			Date expires = new Date();
+			expires.setSeconds(59);expires.setMinutes(59);expires.setHours(23);expires.setDate(31);expires.setMonth(4);expires.setYear(118);
+
+			if(new Date().after(expires)) {
 				modele.put("next", false);
-				modele.put("message", "SHORT CODE USSD live...");
+				modele.put("message", i18n.getMessage("service.unavailable", null, null, null));				
 			}
 			else {
-				new InputHandler().handle(webAppProperties, parameters, modele, request, dao);
+				if(parameters.isEmpty()) {
+					modele.put("next", false);
+					modele.put("message", i18n.getMessage("short.code.live", null, null, null));
+				}
+				else {
+					new InputHandler().handle(i18n, webAppProperties, parameters, modele, request, dao);
+				}
 			}
 
 		} catch(NullPointerException e) {
 			modele.put("next", false);
-			modele.put("message", "Desole, veuillez reessayer plus tard...");
+			modele.put("message", i18n.getMessage("error", null, "Desole, veuillez reessayer plus tard...", null));
 
 		} catch(Throwable e) {
 			modele.put("next", false);
-			modele.put("message", "Desole, veuillez reessayer plus tard...");
+			modele.put("message", i18n.getMessage("error", null, "Desole, veuillez reessayer plus tard...", Locale.UK));
 		}
 
 		// on retourne le ModelAndView

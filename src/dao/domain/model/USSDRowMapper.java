@@ -8,9 +8,9 @@ public class USSDRowMapper implements RowMapper<USSD>{
 
 	@Override
 	public USSD mapRow(ResultSet rs, int rowNum) throws SQLException {
-		// TODO Auto-generated method stub		
+		// TODO Auto-generated method stub
 
-		return  new USSD(rs.getInt("ID"), rs.getLong("SESSIONID"), rs.getString("MSISDN"), rs.getString("INPUT"), rs.getInt("STEP"), rs.getTimestamp("LAST_UPDATE_TIME"));
+		return new USSD(rs.getInt("ID"), rs.getLong("SESSIONID"), rs.getString("MSISDN"), rs.getString("INPUT"), rs.getInt("STEP"), rs.getTimestamp("LAST_UPDATE_TIME"));
 	}
 
 }

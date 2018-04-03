@@ -8,28 +8,28 @@ import dao.JdbcOperations.MSISDNDAOJdbc;
 import env.WebAppProperties;
 import util.AccountDetails;
 
-public class NumberValidator {
+public class MSISDNValidator {
 
-	public NumberValidator() {
+	public MSISDNValidator() {
 
 	}
 
 	public boolean isFiltered(DAO dao, WebAppProperties webAppProperties, String msisdn, String type) {
 		if(type.equals("A")) {
 			if(onNet(webAppProperties, msisdn)) {
-				return isFiltered(dao, webAppProperties.getAnumber_serviceClass_include_filter(), webAppProperties.getAnumber_db_include_filter(), webAppProperties.getAnumber_serviceClass_exclude_filter(), webAppProperties.getAnumber_db_exclude_filter(), msisdn);
+				return validate(dao, webAppProperties.getAnumber_serviceClass_include_filter(), webAppProperties.getAnumber_db_include_filter(), webAppProperties.getAnumber_serviceClass_exclude_filter(), webAppProperties.getAnumber_db_exclude_filter(), msisdn);
 			}
 		}
 		else if(type.equals("B")) {
 			if(onNet(webAppProperties, msisdn)) {
-				return isFiltered(dao, webAppProperties.getBnumber_serviceClass_include_filter(), webAppProperties.getBnumber_db_include_filter(), webAppProperties.getBnumber_serviceClass_exclude_filter(), webAppProperties.getBnumber_db_exclude_filter(), msisdn);
+				return validate(dao, webAppProperties.getBnumber_serviceClass_include_filter(), webAppProperties.getBnumber_db_include_filter(), webAppProperties.getBnumber_serviceClass_exclude_filter(), webAppProperties.getBnumber_db_exclude_filter(), msisdn);
 			}
 		}
 
 		return false;
 	}
 
-	private boolean isFiltered(DAO dao, List<String> number_serviceClass_include_filter, List<String> number_db_include_filter, List<String> number_serviceClass_exclude_filter, List<String> number_db_exclude_filter, String msisdn) {
+	private boolean validate(DAO dao, List<String> number_serviceClass_include_filter, List<String> number_db_include_filter, List<String> number_serviceClass_exclude_filter, List<String> number_db_exclude_filter, String msisdn) {
 		// include
 		boolean included = false;
 		// exclude
@@ -133,7 +133,7 @@ public class NumberValidator {
 				}
 			}
 		}
-		
+
 		return false;
 	}
 

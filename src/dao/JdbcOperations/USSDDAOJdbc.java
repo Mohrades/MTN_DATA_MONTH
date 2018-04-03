@@ -26,10 +26,11 @@ public class USSDDAOJdbc {
 	public void saveOneUSSD(USSD ussd) {
 		try {
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
 			if(ussd.getId() == 0) {
 				getJdbcTemplate().update("INSERT INTO MTN_DATA_MONTH_USSD_EBA (SESSIONID,MSISDN,INPUT,STEP,LAST_UPDATE_TIME) VALUES(" + ussd.getSessionId() + ",'" + ussd.getMsisdn() + "','" + ussd.getInput() + "'," + ussd.getStep() + ",TIMESTAMP '" + dateFormat.format(new Date()) + "')");			
 			}
-			else if(ussd.getId() > 0){
+			else if(ussd.getId() > 0) {
 				getJdbcTemplate().update("UPDATE MTN_DATA_MONTH_USSD_EBA SET STEP = " + ussd.getStep() + ", INPUT = '" + ussd.getInput() + "', LAST_UPDATE_TIME = TIMESTAMP '" + dateFormat.format(new Date()) + "' WHERE ((ID = " + ussd.getId() + ") AND (SESSIONID = " + ussd.getSessionId() + ") AND (MSISDN = '" + ussd.getMsisdn() + "'))");
 			}
 

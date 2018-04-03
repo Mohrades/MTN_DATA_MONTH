@@ -13,8 +13,19 @@
     <context:property-placeholder location="classpath:applicationContext.properties" />
     <util:properties id="appConfig" location="classpath:conf.properties" />
 
+	<!-- The use of <context:component-scan> implicitly enables the functionality of <context:annotation-config>.
+	There is usually no need to include the <context:annotation-config> element when using <context:component-scan> -->
     <context:annotation-config />
-    <context:component-scan base-package="env" />
+
+  	<context:component-scan base-package="env" use-default-filters="false">
+  		<context:include-filter type="annotation" expression="org.springframework.stereotype.Component" />
+  		<!-- <context:include-filter type="regex" expression=".*Stub.*Repository" /> -->
+  		<context:include-filter type="regex" expression=".*Properties" />
+
+  		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository" />
+  		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service" />
+  		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+  	</context:component-scan>
 
 	<bean id="dao" class="dao.DAO">
     	<property name="dataSource" ref="db_connection" />
@@ -50,6 +61,16 @@
         <property name="maxStatements" value="${jdbc.maxStatements}" />
     	<property name="maxStatementsPerConnection" value="${jdbc.maxStatementsPerConnection}" />
     </bean> -->
+    
+    <!-- this MessageSource is being used in a web application -->
+	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>i18n.messages</value>
+				<value>i18n.exceptions</value>
+			</list>
+		</property>
+	</bean>
 
     <import resource="spring-batch-config.xml" />
 

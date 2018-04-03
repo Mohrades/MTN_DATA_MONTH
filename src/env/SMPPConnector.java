@@ -1,4 +1,4 @@
-package sms;
+package env;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,7 +12,7 @@ import java.net.URLEncoder;
 public class SMPPConnector {
 
 	public SMPPConnector() {
-		
+
 	}
 
 	public void submitSm(String senderName, String subscriber, String message) {

@@ -21,30 +21,26 @@ public class CallbackDataAndView implements View {
 		// TODO Auto-generated method stub
 
 		// response.setContentType("text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2; charset=UTF-8");
-		response.setContentType("text/*; charset=UTF-8");
+		// response.setContentType("text/xml; charset=UTF-8");
 		// response.setContentType("text/plain;charset=UTF-8");
+		response.setContentType("text/*; charset=UTF-8");
 
 		if(modele.containsKey("next")) {
 			try {
-				if(((Boolean)modele.get("next")).booleanValue()) {
-					response.addHeader("FreeFlow", "FC");
-				}
-				else {
-					response.addHeader("FreeFlow", "FB");
-				}
+				if(((Boolean)modele.get("next")).booleanValue()) response.addHeader("FreeFlow", "FC");
+				else response.addHeader("FreeFlow", "FB");
 
 			} catch(Exception e) {
-				response.addHeader("FreeFlow", "FC");
+				response.setHeader("FreeFlow", "FC");
 
 			} catch(Throwable e) {
-				response.addHeader("FreeFlow", "FC");
-
+				response.setHeader("FreeFlow", "FC");
 			}
 		}
 		else {
 			response.addHeader("FreeFlow", "FC");
 		}
-		
+
 		if(modele.containsKey("amount")) {
 			response.addHeader("Charge", "Y");
 
@@ -52,16 +48,17 @@ public class CallbackDataAndView implements View {
 				response.addHeader("Amount", ((Long)modele.get("nextStep")).longValue() + "");
 
 			} catch(NullPointerException e) {
-				response.addHeader("Amount", "0");
-				
+				response.setHeader("Amount", "0");
+
 			} catch(Exception e) {
-				response.addHeader("Amount", "0");
-				
+				response.setHeader("Amount", "0");
+
 			} catch(Throwable e) {
-				response.addHeader("Amount", "0");
+				response.setHeader("Amount", "0");
 			}
-			
 		}
+
+		// response.setHeader("Cache-Control", "no-cache");
 
 		response.setStatus(HttpURLConnection.HTTP_OK);
 

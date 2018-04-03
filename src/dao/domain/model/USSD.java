@@ -3,16 +3,16 @@ package dao.domain.model;
 import java.util.Date;
 
 public class USSD {
-	
+
 	private int id, step;
 	private long sessionId;
 	private String msisdn, input;
 	private Date last_update_time;
-	
+
 	public USSD() {
-		
+
 	}
-	
+
 	public USSD(int id, long sessionId, String msisdn, String input, int step, Date last_update_time) {
 		this.id = id;
 		this.sessionId = sessionId;

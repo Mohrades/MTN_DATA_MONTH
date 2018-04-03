@@ -9,11 +9,14 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Splitter;
 
-@Component("webAppProperties")
+@Component(value="webAppProperties")
 public class WebAppProperties implements InitializingBean, DisposableBean {
 
 	@Value("#{appConfig['gsm.mcc']}")
 	private short mcc;
+	
+	@Value("#{appConfig['gsm.name']}")
+	private String gsm_name;
 	
 	@Value("#{appConfig['gsm.short_code']}")
 	private short sc;
@@ -116,6 +119,10 @@ public class WebAppProperties implements InitializingBean, DisposableBean {
 
 	public short getMcc() {
 		return mcc;
+	}
+
+	public String getGsm_name() {
+		return gsm_name;
 	}
 
 	public short getSc() {
