@@ -276,7 +276,12 @@ public class InputHandler {
 						long gap = (sharing == null) ? (webAppProperties.getSharing_data_volume_limit()) : (webAppProperties.getSharing_data_volume_limit() - sharing.getValue());
 
 						if(gap >= Long.parseLong(webAppProperties.getData_volume().get(0))) {
-							endStep(dao, ussd, modele, webAppProperties, i18n.getMessage("data.sharing.receiver.limits.exceeded", new Object[] {inputs.get(3)}, null, null), null, null, null, null);
+							if((gap/(10*100)) >= 1024) {
+								endStep(dao, ussd, modele, webAppProperties, i18n.getMessage("data.sharing.receiver.gap", new Object [] {inputs.get(3), new Formatter().format("%.2f", ((double)(gap/(10*100)))/1024), "Go"}, null, null), null, null, null, null);
+							}
+							else {
+								endStep(dao, ussd, modele, webAppProperties, i18n.getMessage("data.sharing.receiver.gap", new Object [] {inputs.get(3), gap/(10*100), "Mo"}, null, null), null, null, null, null);
+							}
 						}
 						else endStep(dao, ussd, modele, webAppProperties, i18n.getMessage("data.sharing.receiver.limits.exceeded", new Object[] {inputs.get(3)}, null, null), null, null, null, null);
 					}
