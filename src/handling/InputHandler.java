@@ -59,7 +59,7 @@ public class InputHandler {
 
 			// 0  : successful (delete state from ussd table; actions and message)
 			else if(((Integer)flowStatus.get("status")) == 0) {
-				String short_code = webAppProperties.getSc() + "";
+				String short_code = webAppProperties.getSc() +  "";
 
 				if(ussd.getInput().equals(short_code + "*2")) {
 					// envoie SMS de statut
