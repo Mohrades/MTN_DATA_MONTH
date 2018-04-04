@@ -59,7 +59,7 @@ public class InputHandler {
 
 			// 0  : successful (delete state from ussd table; actions and message)
 			else if(((Integer)flowStatus.get("status")) == 0) {
-				String short_code = webAppProperties.getSc() +  "";
+				String short_code = webAppProperties.getSc() + "";
 
 				if(ussd.getInput().equals(short_code + "*2")) {
 					// envoie SMS de statut
@@ -133,10 +133,10 @@ public class InputHandler {
 			if((balance.getAccountValue()/(10*100)) >= 1024) {
 				// endStep(dao, ussd, modele, i18n.getMessage("status", new Object [] {new Formatter().format("%4d", (double)units/1024), "Go", (new SimpleDateFormat("dd/MM/yyyy HH:mm")).format(balance.getExpiryDate())}, null, null), null, null, null, null);
 				// endStep(dao, ussd, modele, i18n.getMessage("status", new Object [] {new Formatter().format("%04d", (double)units/1024), "Go", (new SimpleDateFormat("dd/MM/yyyy HH:mm")).format(balance.getExpiryDate())}, null, null), null, null, null, null);
-				endStep(dao, ussd, modele, webAppProperties, i18n.getMessage("status", new Object [] {new Formatter().format("%.2f", ((double)(balance.getAccountValue()/(10*100)))/1024), "Go", (new SimpleDateFormat("dd/MM/yyyy HH:mm")).format(balance.getExpiryDate())}, null, null), null, null, null, null);
+				endStep(dao, ussd, modele, webAppProperties, i18n.getMessage("status", new Object [] {new Formatter().format("%.2f", ((double)(balance.getAccountValue()/(10*100)))/1024), "Go", (new SimpleDateFormat("dd/MM/yyyy 'a' HH:mm")).format(balance.getExpiryDate())}, null, null), null, null, null, null);
 			}
 			else {
-				endStep(dao, ussd, modele, webAppProperties, i18n.getMessage("status", new Object [] {balance.getAccountValue()/(10*100), "Mo", (new SimpleDateFormat("dd/MM/yyyy HH:mm")).format(balance.getExpiryDate())}, null, null), null, null, null, null);
+				endStep(dao, ussd, modele, webAppProperties, i18n.getMessage("status", new Object [] {balance.getAccountValue()/(10*100), "Mo", (new SimpleDateFormat("dd/MM/yyyy 'a' HH:mm")).format(balance.getExpiryDate())}, null, null), null, null, null, null);
 			}
 		}
 	}
@@ -264,9 +264,14 @@ public class InputHandler {
 						// int choice = Integer.parseInt(parameters.get("imput").substring(6, 7));
 						if(doActions(webAppProperties, dao, ussd.getMsisdn(), webAppProperties.getMcc() + "" + inputs.get(3), Integer.parseInt(inputs.get(2)))) {
 							String date = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
-							String volume = volume_data / (10*100) + "";
+							long volume = volume_data / (10*100);
 
-							endStep(dao, ussd, modele, webAppProperties, "Vous avez envoye avec succes " + volume + "Mo au " + inputs.get(3) + " le " + date + ". Votre Volume Internet expire le " + "31-05-2018 a 23:59", ussd.getMsisdn(), "Vous avez recu avec succes " + volume + "Mo du " + ussd.getMsisdn() + " le " + date + ". Votre Volume Internet expire le " + "31-05-2018 a 23:59. Pour verifier, tapez: *124*DA#", inputs.get(3)+"", "STAFFDATA");
+							if(volume >= 1024) {
+								endStep(dao, ussd, modele, webAppProperties, i18n.getMessage("Anumber.command.status.successful", new Object [] {new Formatter().format("%.2f", ((double)volume)/1024), "Go", inputs.get(3), date, "31-05-2018 a 23:59"}, null, null), ussd.getMsisdn(), i18n.getMessage("Bnumber.command.status.successful", new Object [] {new Formatter().format("%.2f", ((double)volume)/1024), "Go", ussd.getMsisdn(), date, "31-05-2018 a 23:59"}, null, null), inputs.get(3), "STAFFDATA");
+							}
+							else {
+								endStep(dao, ussd, modele, webAppProperties, i18n.getMessage("Anumber.command.status.successful", new Object [] {volume, "Mo", inputs.get(3), date, "31-05-2018 a 23:59"}, null, null), ussd.getMsisdn(), i18n.getMessage("Bnumber.command.status.successful", new Object [] {volume, "Mo", ussd.getMsisdn(), date, "31-05-2018 a 23:59"}, null, null), inputs.get(3), "STAFFDATA");
+							}
 						}
 						else {
 							endStep(dao, ussd, modele, webAppProperties, i18n.getMessage("service.internal.error", null, null, null), null, null, null, null);
