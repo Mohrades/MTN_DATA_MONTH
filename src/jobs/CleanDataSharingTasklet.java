@@ -22,7 +22,7 @@ public class CleanDataSharingTasklet implements Tasklet {
 
 		try {
 			// dao.getJdbcTemplate().update("DELETE FROM MTN_DATA_MONTH_SHARING_EBA");
-			dao.getJdbcTemplate().update("TRUNCATE TABLE MTN_DATA_MONTH_USSD_EBA");
+			dao.getJdbcTemplate().update("TRUNCATE TABLE MTN_DATA_MONTH_SHARING_EBA");
 
 			stepContribution.setExitStatus(ExitStatus.COMPLETED);
 			return RepeatStatus.FINISHED;			

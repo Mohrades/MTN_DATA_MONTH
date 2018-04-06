@@ -15,15 +15,15 @@ import com.google.common.base.Splitter;
 import connexions.AIRRequest;
 import dao.DAO;
 import dao.JdbcOperations.SharingDAOJdbc;
-import dao.JdbcOperations.USSDDAOJdbc;
+import dao.JdbcOperations.USSDRequestDAOJdbc;
 import dao.domain.model.Sharing;
-import dao.domain.model.USSD;
+import dao.domain.model.USSDRequest;
 import util.BalanceAndDate;
 
 @SuppressWarnings("unused")
-public class USSDRequest {
+public class HttpUSSDRequest {
 
-	public USSDRequest() {
+	public HttpUSSDRequest() {
 
 	}
 

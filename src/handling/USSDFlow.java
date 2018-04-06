@@ -13,9 +13,9 @@ import org.springframework.context.MessageSource;
 
 import com.google.common.base.Splitter;
 
-import dao.domain.model.USSD;
-import env.WebAppProperties;
+import dao.domain.model.USSDRequest;
 import filter.MSISDNValidator;
+import product.ProductProperties;
 
 @SuppressWarnings("unused")
 public class USSDFlow {
@@ -24,7 +24,7 @@ public class USSDFlow {
 
 	}
 
-	public Map<String, Object> validate(USSD ussd, Document document, WebAppProperties webAppProperties, MessageSource i18n) {
+	public Map<String, Object> validate(USSDRequest ussd, Document document, ProductProperties productProperties, MessageSource i18n) {
 		// on crée le modèle de la vue à afficher
 		Map<String, Object> modele = new HashMap<String, Object>();
 		// initialization
@@ -156,7 +156,7 @@ public class USSDFlow {
 										try {
 											String msisdn = Long.parseLong(input) + "";
 
-											if((element.getAttributeValue("ton").equals("International") && (msisdn.startsWith(webAppProperties.getMcc() + "")) && (((webAppProperties.getMcc() + "").length() + webAppProperties.getMsisdn_length()) == msisdn.length())) || ((element.getAttributeValue("ton").equals("National")) && (webAppProperties.getMsisdn_length() == msisdn.length()))) {
+											if((element.getAttributeValue("ton").equals("International") && (msisdn.startsWith(productProperties.getMcc() + "")) && (((productProperties.getMcc() + "").length() + productProperties.getMsisdn_length()) == msisdn.length())) || ((element.getAttributeValue("ton").equals("National")) && (productProperties.getMsisdn_length() == msisdn.length()))) {
 											/*if((element.getAttributeValue("ton").equals("International")) || ((element.getAttributeValue("ton").equals("National")) && (webAppProperties.getMsisdn_length() == msisdn.length()))) {*/
 												if((element.getAttributeValue("network") == null) || (element.getAttributeValue("network").isEmpty()) || (element.getAttributeValue("network").equals("off"))) {
 													currentState = element;
@@ -164,14 +164,14 @@ public class USSDFlow {
 													continue transitions;
 												}
 												else if(element.getAttributeValue("network").equals("on")) {
-													if(((element.getAttributeValue("ton").equals("National")) && (new MSISDNValidator()).onNet(webAppProperties, webAppProperties.getMcc() + "" + msisdn)) || ((element.getAttributeValue("ton").equals("International")) && (new MSISDNValidator()).onNet(webAppProperties, msisdn))) {
+													if(((element.getAttributeValue("ton").equals("National")) && (new MSISDNValidator()).onNet(productProperties, productProperties.getMcc() + "" + msisdn)) || ((element.getAttributeValue("ton").equals("International")) && (new MSISDNValidator()).onNet(productProperties, msisdn))) {
 														currentState = element;
 														tree.add(step + "");
 														continue transitions;
 													}
 													else {
 														if(children.size() == 1) {
-															return handleInvalidInput(i18n.getMessage("msisdn.onnet.required", new Object[] {webAppProperties.getGsm_name()}, null, null));
+															return handleInvalidInput(i18n.getMessage("msisdn.onnet.required", new Object[] {productProperties.getGsm_name()}, null, null));
 														}
 													}
 												}

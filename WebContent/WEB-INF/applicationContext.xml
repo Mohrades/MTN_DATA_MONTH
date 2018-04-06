@@ -17,7 +17,7 @@
 	There is usually no need to include the <context:annotation-config> element when using <context:component-scan> -->
     <context:annotation-config />
 
-  	<context:component-scan base-package="env" use-default-filters="false">
+  	<context:component-scan base-package="product" use-default-filters="false">
   		<context:include-filter type="annotation" expression="org.springframework.stereotype.Component" />
   		<!-- <context:include-filter type="regex" expression=".*Stub.*Repository" /> -->
   		<context:include-filter type="regex" expression=".*Properties" />
@@ -61,7 +61,7 @@
         <property name="maxStatements" value="${jdbc.maxStatements}" />
     	<property name="maxStatementsPerConnection" value="${jdbc.maxStatementsPerConnection}" />
     </bean> -->
-    
+
     <!-- this MessageSource is being used in a web application -->
 	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
 		<property name="basenames">

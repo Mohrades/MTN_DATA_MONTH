@@ -5,7 +5,7 @@ import java.util.List;
 import connexions.AIRRequest;
 import dao.DAO;
 import dao.JdbcOperations.MSISDNDAOJdbc;
-import env.WebAppProperties;
+import product.ProductProperties;
 import util.AccountDetails;
 
 public class MSISDNValidator {
@@ -14,15 +14,15 @@ public class MSISDNValidator {
 
 	}
 
-	public boolean isFiltered(DAO dao, WebAppProperties webAppProperties, String msisdn, String type) {
+	public boolean isFiltered(DAO dao, ProductProperties productProperties, String msisdn, String type) {
 		if(type.equals("A")) {
-			if(onNet(webAppProperties, msisdn)) {
-				return validate(dao, webAppProperties.getAnumber_serviceClass_include_filter(), webAppProperties.getAnumber_db_include_filter(), webAppProperties.getAnumber_serviceClass_exclude_filter(), webAppProperties.getAnumber_db_exclude_filter(), msisdn);
+			if(onNet(productProperties, msisdn)) {
+				return validate(dao, productProperties.getAnumber_serviceClass_include_filter(), productProperties.getAnumber_db_include_filter(), productProperties.getAnumber_serviceClass_exclude_filter(), productProperties.getAnumber_db_exclude_filter(), msisdn);
 			}
 		}
 		else if(type.equals("B")) {
-			if(onNet(webAppProperties, msisdn)) {
-				return validate(dao, webAppProperties.getBnumber_serviceClass_include_filter(), webAppProperties.getBnumber_db_include_filter(), webAppProperties.getBnumber_serviceClass_exclude_filter(), webAppProperties.getBnumber_db_exclude_filter(), msisdn);
+			if(onNet(productProperties, msisdn)) {
+				return validate(dao, productProperties.getBnumber_serviceClass_include_filter(), productProperties.getBnumber_db_include_filter(), productProperties.getBnumber_serviceClass_exclude_filter(), productProperties.getBnumber_db_exclude_filter(), msisdn);
 			}
 		}
 
@@ -123,11 +123,11 @@ public class MSISDNValidator {
 		return false;
 	}
 
-	public boolean onNet(WebAppProperties webAppProperties, String msisdn) {
-		String country_code = webAppProperties.getMcc() + "";
+	public boolean onNet(ProductProperties productProperties, String msisdn) {
+		String country_code = productProperties.getMcc() + "";
 
-		if((country_code.length() + webAppProperties.getMsisdn_length()) == (msisdn.length())) {
-			for(String prefix : webAppProperties.getMnc()) {
+		if((country_code.length() + productProperties.getMsisdn_length()) == (msisdn.length())) {
+			for(String prefix : productProperties.getMnc()) {
 				if(msisdn.startsWith(country_code+prefix)) {
 					return true;
 				}

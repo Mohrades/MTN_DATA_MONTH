@@ -1,4 +1,4 @@
-package env;
+package product;
 
 import java.util.List;
 
@@ -9,15 +9,15 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Splitter;
 
-@Component(value="webAppProperties")
-public class WebAppProperties implements InitializingBean, DisposableBean {
+@Component(value="productProperties")
+public class ProductProperties implements InitializingBean, DisposableBean {
 
 	@Value("#{appConfig['gsm.mcc']}")
 	private short mcc;
-	
+
 	@Value("#{appConfig['gsm.name']}")
 	private String gsm_name;
-	
+
 	@Value("#{appConfig['gsm.short_code']}")
 	private short sc;
 
@@ -25,10 +25,10 @@ public class WebAppProperties implements InitializingBean, DisposableBean {
 
 	@Value("#{appConfig['msisdn.length']}")
 	private byte msisdn_length;
-	
+
 	@Value("#{appConfig['Anumber.da']}")
 	private short Anumber_da;
-	
+
 	@Value("#{appConfig['Bnumber.da']}")
 	private short Bnumber_da;
 
@@ -46,7 +46,7 @@ public class WebAppProperties implements InitializingBean, DisposableBean {
 	private List<String> Bnumber_db_include_filter;
 	private List<String> Bnumber_serviceClass_exclude_filter;
 	private List<String> Bnumber_db_exclude_filter;
-	
+
 	@Value("#{appConfig['gsm.mnc']}")
 	public void setMnc(final String gsmmnc) {
 		if(isSet(gsmmnc)) {

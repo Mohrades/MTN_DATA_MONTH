@@ -1,4 +1,4 @@
-package handling;
+package env;
 
 import java.net.HttpURLConnection;
 import java.util.Map;
@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.View;
 
-public class CallbackDataAndView implements View {
+public class USSDResponseView implements View {
 
 	@Override
 	public String getContentType() {

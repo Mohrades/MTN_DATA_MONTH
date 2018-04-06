@@ -8,14 +8,14 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import dao.DAO;
-import dao.domain.model.USSD;
-import dao.domain.model.USSDRowMapper;
+import dao.domain.model.USSDRequest;
+import dao.domain.model.USSDRequestRowMapper;
 
-public class USSDDAOJdbc {
+public class USSDRequestDAOJdbc {
 
 	private DAO dao;
 
-	public USSDDAOJdbc(DAO dao) {
+	public USSDRequestDAOJdbc(DAO dao) {
 		this.dao = dao;
 	}
 
@@ -23,7 +23,7 @@ public class USSDDAOJdbc {
 		return dao.getJdbcTemplate();
 	}
 
-	public void saveOneUSSD(USSD ussd) {
+	public void saveOneUSSD(USSDRequest ussd) {
 		try {
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -41,13 +41,13 @@ public class USSDDAOJdbc {
 		}
 	}
 
-	public USSD getOneUSSD(int id) {
-		List<USSD> ussds = getJdbcTemplate().query("SELECT ID,SESSIONID,MSISDN,STEP,INPUT,LAST_UPDATE_TIME FROM MTN_DATA_MONTH_USSD_EBA WHERE ID = " + id, new USSDRowMapper());
+	public USSDRequest getOneUSSD(int id) {
+		List<USSDRequest> ussds = getJdbcTemplate().query("SELECT ID,SESSIONID,MSISDN,STEP,INPUT,LAST_UPDATE_TIME FROM MTN_DATA_MONTH_USSD_EBA WHERE ID = " + id, new USSDRequestRowMapper());
 		return ussds.isEmpty() ? null : ussds.get(0);
 	}
 
-	public USSD getOneUSSD(long sessionId, String msisdn)  {
-		List<USSD> ussds = getJdbcTemplate().query("SELECT ID,SESSIONID,MSISDN,STEP,INPUT,LAST_UPDATE_TIME FROM MTN_DATA_MONTH_USSD_EBA WHERE ((SESSIONID = " + sessionId + ") AND (MSISDN = '" + msisdn + "'))", new USSDRowMapper());
+	public USSDRequest getOneUSSD(long sessionId, String msisdn)  {
+		List<USSDRequest> ussds = getJdbcTemplate().query("SELECT ID,SESSIONID,MSISDN,STEP,INPUT,LAST_UPDATE_TIME FROM MTN_DATA_MONTH_USSD_EBA WHERE ((SESSIONID = " + sessionId + ") AND (MSISDN = '" + msisdn + "'))", new USSDRequestRowMapper());
 		return ussds.isEmpty() ? null : ussds.get(0);
 	}
 

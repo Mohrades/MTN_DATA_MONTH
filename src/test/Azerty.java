@@ -10,7 +10,7 @@ import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
-import env.USSDMenu;
+import product.USSDMenu;
 
 @SuppressWarnings("unused")
 public class Azerty {

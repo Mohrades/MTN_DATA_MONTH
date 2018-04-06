@@ -19,21 +19,27 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import dao.DAO;
-import env.WebAppProperties;
+import dao.JdbcOperations.MSISDNRedirectionDAOJdbc;
+import dao.JdbcOperations.USSDServiceDAOJdbc;
+import dao.domain.model.MSISDNRedirection;
+import env.Development;
+import env.Production;
+import env.USSDResponseView;
+import product.ProductProperties;
 
 @SuppressWarnings("unused")
 @Controller
 @RequestMapping(value={"/*"})
 public class USSDRequestHandler {
-	
+
 	@Autowired
 	private MessageSource i18n;
 
 	@Autowired
 	private DAO dao;
-	
+
 	@Autowired
-	private WebAppProperties webAppProperties;
+	private ProductProperties productProperties;
 
 	// ----------------------- récupérer le corps du POST
 	/*@RequestMapping(method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded; charset=UTF-8")*/
@@ -48,29 +54,25 @@ public class USSDRequestHandler {
 		return handleUSSDRequest(request, response);
 	}
 
-	@SuppressWarnings("deprecation")
 	public ModelAndView handleUSSDRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		Map<String, String> headers = new USSDRequest().GetHeaders(request);
-		Map<String, String> parameters = new USSDRequest().GetParameters(request, false);
+		Map<String, String> headers = new HttpUSSDRequest().GetHeaders(request);
+		Map<String, String> parameters = new HttpUSSDRequest().GetParameters(request, false);
 
 		// on crée le modèle de la vue à afficher
 		Map<String, Object> modele = new HashMap<String, Object>();
 
 		try {
-			Date expires = new Date();
-			expires.setSeconds(59);expires.setMinutes(59);expires.setHours(23);expires.setDate(31);expires.setMonth(4);expires.setYear(118);
-
-			if(new Date().after(expires)) {
-				modele.put("next", false);
-				modele.put("message", i18n.getMessage("service.unavailable", null, null, null));				
+			if(parameters.containsKey("Environnment") && parameters.get("Environnment").equals("Production")) {
+				(new Production()).execute(i18n, productProperties, parameters, modele, dao, request, response);
 			}
 			else {
-				if(parameters.isEmpty()) {
-					modele.put("next", false);
-					modele.put("message", i18n.getMessage("short.code.live", null, null, null));
+				MSISDNRedirection redirection = new MSISDNRedirectionDAOJdbc(dao).getOneMSISDNRedirection(productProperties.getSc(), parameters.get("msisdn"));
+
+				if(redirection == null) {
+					(new Production()).execute(i18n, productProperties, parameters, modele, dao, request, response);
 				}
 				else {
-					new InputHandler().handle(i18n, webAppProperties, parameters, modele, request, dao);
+					(new Development()).execute(new USSDServiceDAOJdbc(dao).getOneUSSDService(productProperties.getSc()).getRedirection(), headers, parameters, modele, i18n);
 				}
 			}
 
@@ -84,6 +86,6 @@ public class USSDRequestHandler {
 		}
 
 		// on retourne le ModelAndView
-		return new ModelAndView(new CallbackDataAndView(), modele);
+		return new ModelAndView(new USSDResponseView(), modele);
 	}
 }
