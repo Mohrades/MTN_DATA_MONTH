@@ -41,12 +41,12 @@ public class MSISDNDAOJdbc {
 		List<MSISDN> staffs = getJdbcTemplate().query("SELECT ID,MSISDN FROM " + tableName + " WHERE ID = " + id, new MSISDNRowMapper());
 		return staffs.isEmpty() ? null : staffs.get(0);
 	}
-	
+
 	public MSISDN getOneMSISDN(String msisdn, String tableName) {
 		List<MSISDN> staffs = getJdbcTemplate().query("SELECT ID,MSISDN FROM " + tableName + " WHERE MSISDN = '" + msisdn + "'", new MSISDNRowMapper());
 		return staffs.isEmpty() ? null : staffs.get(0);
 	}
-	
+
 	public void deleteOneMSISDN(int id, String tableName) {
 		getJdbcTemplate().update("DELETE FROM " + tableName + " WHERE ID = " + id);
 	}

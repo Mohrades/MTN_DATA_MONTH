@@ -210,6 +210,11 @@ public class USSDFlow {
 				}
 			}
 
+			// StringJoiner is used internally by static String.join().
+			// String.join("-", "2015", "10", "31" ); // Join String by a delimiter ==> 2015-10-31
+			// correct subscriber inputs in the good and recommended format
+			ussd.setInput(String.join("*", inputs)); // Join a List by a delimiter
+
 			// on-transition : view-state
 			if(hasChildren(currentState)) {
 				String transitions = tree.toString();

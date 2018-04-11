@@ -44,8 +44,6 @@ public class InputHandler {
 			ussd = new USSDRequestDAOJdbc(dao).getOneUSSD(sessionId, parameters.get("msisdn"));
 
 			if(ussd == null) {
-				// start date
-				// stop date
 				USSDService service = new USSDServiceDAOJdbc(dao).getOneUSSDService(productProperties.getSc());
 				Date now = new Date();
 
