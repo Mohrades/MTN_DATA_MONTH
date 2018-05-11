@@ -4,7 +4,7 @@ import java.util.List;
 
 import connexions.AIRRequest;
 import dao.DAO;
-import dao.JdbcOperations.MSISDNDAOJdbc;
+import dao.queries.MSISDNDAOJdbc;
 import product.ProductProperties;
 import util.AccountDetails;
 

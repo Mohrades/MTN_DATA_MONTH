@@ -16,7 +16,7 @@
 
     <!-- <mvc:annotation-driven /> -->
 
-  	<context:component-scan base-package="handling" use-default-filters="false">
+  	<context:component-scan base-package="handlers" use-default-filters="false">
   		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
   		<!-- <context:include-filter type="regex" expression=".*Stub.*Repository" /> -->
   		<context:include-filter type="regex" expression=".*RequestHandler" />

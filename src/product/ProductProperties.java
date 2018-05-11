@@ -21,16 +21,19 @@ public class ProductProperties implements InitializingBean, DisposableBean {
 	@Value("#{appConfig['gsm.short_code']}")
 	private short sc;
 
+	@Value("#{appConfig['sms.notifications.header']}")
+	private String sms_notifications_header;
+
 	private List<String> mnc;
 
 	@Value("#{appConfig['msisdn.length']}")
 	private byte msisdn_length;
 
 	@Value("#{appConfig['Anumber.da']}")
-	private short Anumber_da;
+	private int Anumber_da;
 
 	@Value("#{appConfig['Bnumber.da']}")
-	private short Bnumber_da;
+	private int Bnumber_da;
 
 	@Value("#{appConfig['sharing.data.volume.limit']}")
 	private int sharing_data_volume_limit;
@@ -129,6 +132,10 @@ public class ProductProperties implements InitializingBean, DisposableBean {
 		return sc;
 	}
 
+	public String getSms_notifications_header() {
+		return sms_notifications_header;
+	}
+
 	public List<String> getMnc() {
 		return mnc;
 	}
@@ -137,11 +144,11 @@ public class ProductProperties implements InitializingBean, DisposableBean {
 		return msisdn_length;
 	}
 
-	public short getAnumber_da() {
+	public int getAnumber_da() {
 		return Anumber_da;
 	}
 
-	public short getBnumber_da() {
+	public int getBnumber_da() {
 		return Bnumber_da;
 	}
 

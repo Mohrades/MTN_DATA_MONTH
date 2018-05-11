@@ -11,11 +11,11 @@ public class DAO  extends JdbcDaoSupport implements Serializable{
 	 */
 	private static final long serialVersionUID = -2504027749967734918L;
 	
-	public DAO(){
-
+	public DAO() {
+		// JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 	}
 
-	public void setDataSource(ComboPooledDataSource dataSource){
+	public void setDataSource(ComboPooledDataSource dataSource) {
 		super.setDataSource(dataSource);
 	}
 

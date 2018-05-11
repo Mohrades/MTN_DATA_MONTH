@@ -22,13 +22,16 @@
 	<task:scheduler id="scheduling" pool-size="10" />
 
 	<task:scheduled-tasks scheduler="scheduling">
-  		<!-- <task:scheduled ref="jobs" method="clear_ussd" cron="0 */5 * ? * *"  /> -->
+		<!-- new CronTrigger("* 15 9-17 * * MON-FRI") -->
+		<!-- java.lang.IllegalArgumentException: Cron expression must consist of 6 fields (found 7 in "0 00 0 1 APR,MAY,JUN ? 2018") -->
+
+  		<!-- <task:scheduled ref="jobs" method="clear_ussd" cron="0 */5 * ? * *" /> -->
   		<task:scheduled ref="jobs" method="clear_ussd" fixed-delay="900000" />
   		<!-- <task:scheduled ref="jobs" method="clear_ussd" fixed-rate="300000" /> -->
 
-		<!-- <task:scheduled ref="jobs" method="clean_delivery_notification_for_sms" cron="0 30 01 ? * *"  /> -->
-		<!-- <task:scheduled ref="jobs" method="vacuum_analyze" cron="0 0 06,14,22 ? * *"  /> -->
-  		<task:scheduled ref="jobs" method="clear_sharing" cron="0 00 0 1 APR,MAY,JUN ?"  />
+		<!-- <task:scheduled ref="jobs" method="clean_delivery_notification_for_sms" cron="0 30 01 ? * *" /> -->
+		<!-- <task:scheduled ref="jobs" method="vacuum_analyze" cron="0 0 06,14,22 ? * *" /> -->
+  		<task:scheduled ref="jobs" method="clear_sharing" cron="0 00 0 1 APR,MAY,JUN ?" />
 	</task:scheduled-tasks>
 
     <bean id="transactionManager" class="org.springframework.batch.support.transaction.ResourcelessTransactionManager" />
