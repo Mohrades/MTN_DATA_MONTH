@@ -1,12 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" id="WebApp_ID" version="3.1" metadata-complete="true">
   <display-name>MTN_Data_Month</display-name>
+
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
 		/WEB-INF/*Context*.xml
 	</param-value>
   </context-param>
+  
+
+
+
+  <!-- From Log4J 1's documentation : log4j.jar file -->
+  <!-- How to configure the log4j output file path in web.xml and log4j.properties? -->
+  <!-- <context-param>
+  	<param-name>log4jConfigLocation</param-name>
+   	<param-value>/WEB-INF/classes/log4j.properties</param-value>
+  </context-param> -->
+  <!-- How to configure the log4j output file path in web.xml and log4j.properties? -->
+  <!-- <listener>
+  	<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+  </listener> -->
+
+  <!-- To correctly set up Log4j 2 for web applications, there is a log4j-web artifact that does the magic. To specify the logger config, you can simply add this to your web.xml: -->
+  <context-param>
+  	<!-- If using a Servlet 3 compatible servlet container, Log4j 2 will automatically be set up on startup by using a ServletContainerInitializer provided by the log4j-web artifact. -->
+  	<param-name>log4jConfiguration</param-name>
+  	<!-- Log4j 2 "just works" in Servlet 3.0 and newer web applications. It is capable of automatically starting when the application deploys and shutting down when the application undeploys. Thanks to the ServletContainerInitializer API added to Servlet 3.0, the relevant Filter and ServletContextListener classes can be registered dynamically on web application startup. -->
+    <param-value>WEB-INF/classes/log4j2.xml</param-value>
+  </context-param>
+  <!-- You must not manually configure the Log4jServletContextListener or Log4jServletFilter in your deployment descriptor (web.xml) or in another initializer or listener in a Servlet 3.0 or newer application unless you disable auto-initialization with isLog4jAutoInitializationDisabled. Doing so will result in startup errors and unspecified erroneous behavior. -->
+
+
+
   <listener>
     <listener-class>
 		org.springframework.web.context.ContextLoaderListener

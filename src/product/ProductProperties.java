@@ -35,6 +35,9 @@ public class ProductProperties implements InitializingBean, DisposableBean {
 	@Value("#{appConfig['Bnumber.da']}")
 	private int Bnumber_da;
 
+	@Value("#{appConfig['da.expires_in']}")
+	private String da_expires_in;
+
 	@Value("#{appConfig['sharing.data.volume.limit']}")
 	private int sharing_data_volume_limit;
 
@@ -50,12 +53,31 @@ public class ProductProperties implements InitializingBean, DisposableBean {
 	private List<String> Bnumber_serviceClass_exclude_filter;
 	private List<String> Bnumber_db_exclude_filter;
 
+	private List<String> air_hosts;
+	@Value("#{appConfig['air.io.sleep']}")
+	private int air_io_sleep;
+	@Value("#{appConfig['air.io.timeout']}")
+	private int air_io_timeout;
+	@Value("#{appConfig['air.io.threshold']}")
+	private int air_io_threshold;
+	@Value("#{appConfig['air.test.connection.msisdn']}")
+	private String air_test_connection_msisdn;
+	@Value("#{appConfig['air.preferred.host']}")
+	private byte air_preferred_host;
+
 	@Value("#{appConfig['gsm.mnc']}")
 	public void setMnc(final String gsmmnc) {
 		if(isSet(gsmmnc)) {
 			mnc = Splitter.onPattern("[,]").trimResults().omitEmptyStrings().splitToList(gsmmnc);
 		}
 	 }
+
+	@Value("#{appConfig['air.hosts']}")
+	public void setAir_hosts(final String air_hosts) {
+		if(isSet(air_hosts)) {
+			this.air_hosts = Splitter.onPattern("[;]").trimResults().omitEmptyStrings().splitToList(air_hosts);
+		}
+	}
 
 	@Value("#{appConfig['data.volume']}")
 	public void setData_volume(final String data_volume) {
@@ -152,6 +174,10 @@ public class ProductProperties implements InitializingBean, DisposableBean {
 		return Bnumber_da;
 	}
 
+	public String getDa_expires_in() {
+		return da_expires_in;
+	}
+
 	public List<String> getData_volume() {
 		return data_volume;
 	}
@@ -190,6 +216,33 @@ public class ProductProperties implements InitializingBean, DisposableBean {
 
 	public List<String> getBnumber_db_exclude_filter() {
 		return Bnumber_db_exclude_filter;
+	}
+	public List<String> getAir_hosts() {
+		return air_hosts;
+	}
+
+	public int getAir_io_sleep() {
+		return air_io_sleep;
+	}
+
+	public int getAir_io_timeout() {
+		return air_io_timeout;
+	}
+
+	public int getAir_io_threshold() {
+		return air_io_threshold;
+	}
+
+	public String getAir_test_connection_msisdn() {
+		return air_test_connection_msisdn;
+	}
+
+	public byte getAir_preferred_host() {
+		return air_preferred_host;
+	}
+
+	public void setAir_preferred_host(byte air_preferred_host) {
+		this.air_preferred_host = air_preferred_host;
 	}
 
 	public boolean isSet(String property_value) {

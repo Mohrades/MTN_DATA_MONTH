@@ -9,11 +9,11 @@ import dao.DAO;
 import dao.mapping.SharingRowMapper;
 import domain.models.Sharing;
 
-public class SharingDAOJdbc {
+public class JdbcSharingDao {
 
 	private DAO dao;
 
-	public SharingDAOJdbc(DAO dao) {
+	public JdbcSharingDao(DAO dao) {
 		this.dao = dao;
 	}
 

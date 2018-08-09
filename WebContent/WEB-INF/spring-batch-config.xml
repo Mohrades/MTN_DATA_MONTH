@@ -17,36 +17,53 @@
 	<!-- By default when specifying @Async on a method, the executor that will be used is the one supplied to the 'annotation-driven' -->
 	<!-- the value attribute of the @Async annotation can be used when needing to indicate that an executor other than the default should be used -->
 	<!-- set up a default executor -->
-	<task:executor id="batchTaskExecutor" pool-size="10" queue-capacity="20" rejection-policy="CALLER_RUNS" keep-alive="3600" />
+	<task:executor id="batchTaskExecutor" pool-size="03" queue-capacity="05" rejection-policy="CALLER_RUNS" keep-alive="900" />
 	<!-- <task:executor id="executorWithPoolSizeRange" pool-size="5-25" queue-capacity="100" rejection-policy="DISCARD" keep-alive="3600" /> -->
-	<task:scheduler id="scheduling" pool-size="10" />
+	<task:scheduler id="scheduling" pool-size="03" />
 
 	<task:scheduled-tasks scheduler="scheduling">
 		<!-- new CronTrigger("* 15 9-17 * * MON-FRI") -->
 		<!-- java.lang.IllegalArgumentException: Cron expression must consist of 6 fields (found 7 in "0 00 0 1 APR,MAY,JUN ? 2018") -->
 
   		<!-- <task:scheduled ref="jobs" method="clear_ussd" cron="0 */5 * ? * *" /> -->
-  		<task:scheduled ref="jobs" method="clear_ussd" fixed-delay="900000" />
+  		<!-- <task:scheduled ref="jobs" method="clear_ussd" fixed-delay="900000" /> -->
+  		<task:scheduled ref="jobs" method="clear_ussd" fixed-delay="720000" />
   		<!-- <task:scheduled ref="jobs" method="clear_ussd" fixed-rate="300000" /> -->
 
 		<!-- <task:scheduled ref="jobs" method="clean_delivery_notification_for_sms" cron="0 30 01 ? * *" /> -->
 		<!-- <task:scheduled ref="jobs" method="vacuum_analyze" cron="0 0 06,14,22 ? * *" /> -->
-  		<task:scheduled ref="jobs" method="clear_sharing" cron="0 00 0 1 APR,MAY,JUN ?" />
+  		<task:scheduled ref="jobs" method="clear_sharing" cron="0 00 0 1 APR,MAY,JUN,JUL,AUG,SEP,OCT ?" />
 	</task:scheduled-tasks>
 
     <bean id="transactionManager" class="org.springframework.batch.support.transaction.ResourcelessTransactionManager" />
     <bean id="jobRepository" class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean" p:transactionManager-ref="transactionManager" />
     <bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher" p:jobRepository-ref="jobRepository" p:taskExecutor-ref="batchTaskExecutor" />
 
-	<batch:job id="cleanExpiredUssdRequestJob">
+	<!-- <batch:job id="cleanExpiredUssdRequestJob">
 	  <batch:step id="cleanUssdRequest">
 	  	<batch:tasklet ref="cleanExpiredUssdRequestTasklet" transaction-manager="transactionManager" />
+	  </batch:step>
+	</batch:job> -->
+	<batch:job id="cleanExpiredUssdRequestJob">
+	  <batch:step id="cleanUssdRequest">
+	  	<!-- <batch:tasklet ref="cleanExpiredUssdRequestTasklet" transaction-manager="transactionManager" /> -->
+	  	<batch:tasklet transaction-manager="transactionManager">
+          <bean class="jobs.CleanExpiredUssdRequestTasklet">
+     		<property name="productProperties" ref="productProperties" />
+     		<property name="dao" ref="dao" />
+     	  </bean>
+	  	</batch:tasklet>
 	  </batch:step>
 	</batch:job>
 
 	<batch:job id="cleanDataSharingJob">
 	  <batch:step id="cleanDataSharing">
-	  	<batch:tasklet ref="cleanDataSharingTasklet" transaction-manager="transactionManager" />
+	  	<!-- <batch:tasklet ref="cleanDataSharingTasklet" transaction-manager="transactionManager" /> -->
+	  	<batch:tasklet transaction-manager="transactionManager">
+          <bean class="jobs.CleanDataSharingTasklet">
+     		<property name="dao" ref="dao" />
+     	  </bean>
+	  	</batch:tasklet>
 	  </batch:step>
 	</batch:job>
 

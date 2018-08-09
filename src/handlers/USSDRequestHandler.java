@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import dao.DAO;
-import dao.queries.MSISDNRedirectionDAOJdbc;
-import dao.queries.USSDServiceDAOJdbc;
+import dao.queries.JdbcMSISDNRedirectionDao;
+import dao.queries.JdbcUSSDServiceDao;
 import domain.models.MSISDNRedirection;
 import environment.Development;
 import environment.Production;
@@ -66,18 +66,13 @@ public class USSDRequestHandler {
 				(new Production()).execute(i18n, productProperties, parameters, modele, dao, request, response);
 			}
 			else {
-				MSISDNRedirection redirection = new MSISDNRedirectionDAOJdbc(dao).getOneMSISDNRedirection(productProperties.getSc(), parameters.get("msisdn"));
+				MSISDNRedirection redirection = new JdbcMSISDNRedirectionDao(dao).getOneMSISDNRedirection(productProperties.getSc(), parameters.get("msisdn"), 0);
 
-				if(redirection == null) {
+				if((redirection == null) || (redirection.getRedirection_url() == null)) {
 					(new Production()).execute(i18n, productProperties, parameters, modele, dao, request, response);
 				}
 				else {
-					if(redirection.getRedirection_url() != null) {
-						(new Development()).execute(redirection.getRedirection_url(), headers, parameters, modele, i18n);
-					}
-					else {
-						(new Development()).execute(new USSDServiceDAOJdbc(dao).getOneUSSDService(productProperties.getSc()).getRedirection(), headers, parameters, modele, i18n);
-					}
+					(new Development()).execute(redirection.getRedirection_url(), headers, parameters, modele, i18n);
 				}
 			}
 

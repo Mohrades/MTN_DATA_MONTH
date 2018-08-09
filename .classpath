@@ -53,7 +53,9 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xstream-1.4.7.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/ojdbc7-12.1.0.2.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jdom.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/AIR.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/AIRLog4j2.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jaf-1.1.1.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/javax.mail-1.6.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
 			<attribute name="module" value="true"/>

@@ -5,11 +5,11 @@ public class MSISDNRedirection {
 	private int id, code;
 	private String type, expression;
 	private String redirection_url;
-
+	
 	public MSISDNRedirection() {
 
 	}
-
+	
 	public MSISDNRedirection(int id, int code, String type, String expression, String redirection_url) {
 		this.id = id;
 		this.code = code;

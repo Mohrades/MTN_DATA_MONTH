@@ -11,11 +11,11 @@ import dao.DAO;
 import dao.mapping.RollBackRowMapper;
 import domain.models.RollBack;
 
-public class RollBackDAOJdbc {
+public class JdbcRollBackDao {
 
 	private DAO dao;
 
-	public RollBackDAOJdbc(DAO dao) {
+	public JdbcRollBackDao(DAO dao) {
 		this.dao = dao;
 	}
 
@@ -25,10 +25,11 @@ public class RollBackDAOJdbc {
 
 	public void saveOneRollBack(RollBack rollBack) {
 		try {
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
 			if(rollBack.getId() == 0) {
-				getJdbcTemplate().update("INSERT INTO MTN_DATA_MONTH_ROLLBACK_EBA (STEP,VALUE,ANUMBER,BNUMBER,ERROR_TIME) VALUES(" + rollBack.getStep() + "," + rollBack.getValue() + ",'" + rollBack.getAnumber() + "','" + rollBack.getBnumber() + "',TIMESTAMP '" + dateFormat.format(new Date()) + "')");			
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				Date now = new Date();
+
+				getJdbcTemplate().update("INSERT INTO MTN_DATA_MONTH_ROLLBACK_EBA (STEP,VALUE,ANUMBER,BNUMBER,ERROR_TIME,ERROR_TIME_INDEX) VALUES(" + rollBack.getStep() + "," + rollBack.getValue() + ",'" + rollBack.getAnumber() + "','" + rollBack.getBnumber() + "',TIMESTAMP '" + dateFormat.format(now) + "'," + Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(now)) + ")");			
 			}
 
 		} catch(EmptyResultDataAccessException emptyEx) {
