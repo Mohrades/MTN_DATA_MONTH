@@ -124,11 +124,12 @@
   	  <subject>AIR UNAVAILABILITY</subject>
   	  <!-- <bufferSize>512</bufferSize> -->
   	  <bufferSize>50</bufferSize>
-  	  <smtpHost>smtp.exchange-swiss.ch</smtpHost>
-  	  <smtpPassword>C6O79Jhy7</smtpPassword>
-  	  <smtpPort>587</smtpPort>
+  	  <smtpHost>serflex.o2switch.net</smtpHost>
+  	  <smtpPassword>wW+!8;G88hAV</smtpPassword>
+  	  <smtpPort>465</smtpPort>
   	  <!-- <smtpProtocol>smtps|smtp</smtpProtocol> -->
-  	  <smtpProtocol>smtp</smtpProtocol>
+  	  <!-- <smtpProtocol>smtp</smtpProtocol> -->
+  	  <smtpProtocol>smtps</smtpProtocol>
   	  <smtpUsername>dev@ebusinessafrique.com</smtpUsername>
 
   	  <!-- <Layout type="HtmlLayout" title="Log4j Log Messages" /> -->
@@ -145,11 +146,15 @@
   	  <subject>AIR TIME THRESHOLD</subject>
   	  <!-- <bufferSize>512</bufferSize> -->
   	  <bufferSize>50</bufferSize>
-  	  <smtpHost>smtp.exchange-swiss.ch</smtpHost>
+  	  <!-- <smtpHost>smtp.exchange-swiss.ch</smtpHost>
   	  <smtpPassword>C6O79Jhy7</smtpPassword>
-  	  <smtpPort>587</smtpPort>
+  	  <smtpPort>587</smtpPort> -->
+  	  <smtpHost>serflex.o2switch.net</smtpHost>
+  	  <smtpPassword>wW+!8;G88hAV</smtpPassword>
+  	  <smtpPort>465</smtpPort>
   	  <!-- <smtpProtocol>smtps|smtp</smtpProtocol> -->
-  	  <smtpProtocol>smtp</smtpProtocol>
+  	  <!-- <smtpProtocol>smtp</smtpProtocol> -->
+  	  <smtpProtocol>smtps</smtpProtocol>
   	  <smtpUsername>dev@ebusinessafrique.com</smtpUsername>
 
   	  <!-- <Layout type="HtmlLayout" title="Log4j Log Messages" /> -->
