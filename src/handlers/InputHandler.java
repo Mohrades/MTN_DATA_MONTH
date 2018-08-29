@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.context.MessageSource;
 
 import com.google.common.base.Splitter;
+import com.tools.SMPPConnector;
 
 import connexions.AIRRequest;
 import dao.DAO;
@@ -30,7 +31,6 @@ import filter.MSISDNValidator;
 import product.ProductActions;
 import product.ProductProperties;
 import product.USSDMenu;
-import tools.SMPPConnector;
 import util.AccountDetails;
 import util.BalanceAndDate;
 
