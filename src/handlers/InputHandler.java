@@ -61,7 +61,7 @@ public class InputHandler {
 				USSDService service = new JdbcUSSDServiceDao(dao).getOneUSSDService(productProperties.getSc());
 				Date now = new Date();
 
-				if((service == null) || (((service.getStart_date() != null) && (now.before(service.getStart_date()))) || ((service.getStop_date() != null) && (now.after(service.getStop_date()))))) {
+				if((service == null) || (((service.getStart_date() != null) && (now.before(service.getStart_date()))) || ((service.getStop_date() != null) && (now.after(service.getStop_date())))) || (now.after((new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).parse(productProperties.getDa_expires_in())))) {
 					modele.put("next", false);
 					modele.put("message", i18n.getMessage("service.unavailable", null, null, (language == 2) ? Locale.ENGLISH : Locale.FRENCH));
 					return;
@@ -215,13 +215,13 @@ public class InputHandler {
 	public void sharing(DAO dao, USSDRequest ussd, MessageSource i18n, ProductProperties productProperties, Map<String, Object> modele, List<String> inputs, int language) throws ParseException {
 		// validate choice as msisdn
 		/*if(((choice+"").length() == 11) && ((choice+"").startsWith("229"))) {*/
-		if(new MSISDNValidator().onNet(productProperties, productProperties.getMcc() + "" + inputs.get(3))) {
+		if(new MSISDNValidator().onNet(productProperties, ((((productProperties.getMcc() + "").length() + productProperties.getMsisdn_length()) == (inputs.get(3).length())) ? inputs.get(3) : (productProperties.getMcc() + "" + inputs.get(3))))) {
 			// check parameters.get("msisdn") is allowed
 			if((new MSISDNValidator()).isFiltered(dao, productProperties, ussd.getMsisdn(), "A")) {
 				// check choice is allowed
-				if((new MSISDNValidator()).isFiltered(dao, productProperties, productProperties.getMcc() + "" + inputs.get(3), "B")) {
+				if((new MSISDNValidator()).isFiltered(dao, productProperties, ((((productProperties.getMcc() + "").length() + productProperties.getMsisdn_length()) == (inputs.get(3).length())) ? inputs.get(3) : (productProperties.getMcc() + "" + inputs.get(3))), "B")) {
 					// check cumulated data is less or equal than 5Go
-					Sharing sharing = new JdbcSharingDao(dao).getOneSharing(productProperties.getMcc() + "" + inputs.get(3));
+					Sharing sharing = new JdbcSharingDao(dao).getOneSharing(((((productProperties.getMcc() + "").length() + productProperties.getMsisdn_length()) == (inputs.get(3).length())) ? inputs.get(3) : (productProperties.getMcc() + "" + inputs.get(3))));
 
 					long volume_data = 0;
 
@@ -238,20 +238,20 @@ public class InputHandler {
 
 					if((volume_data > 0) && ((sharing == null) || ((sharing.getValue() + volume_data) <= (productProperties.getSharing_data_volume_limit())))) {
 						// int choice = Integer.parseInt(parameters.get("imput").substring(6, 7));
-						if((new ProductActions()).doActions(productProperties, dao, ussd.getMsisdn(), productProperties.getMcc() + "" + inputs.get(3), Integer.parseInt(inputs.get(2)))) {
+						if((new ProductActions()).doActions(productProperties, dao, ussd.getMsisdn(), ((((productProperties.getMcc() + "").length() + productProperties.getMsisdn_length()) == (inputs.get(3).length())) ? inputs.get(3) : (productProperties.getMcc() + "" + inputs.get(3))), Integer.parseInt(inputs.get(2)))) {
 							String date = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
 							long volume = volume_data / (10*100);
 							String da_expires_in = (new SimpleDateFormat("dd-MM-yyyy 'a' HH:mm")).format((new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).parse(productProperties.getDa_expires_in()));
 
 							if(volume >= 1024) {
-								/*endStep(dao, ussd, modele, productProperties, i18n.getMessage("Anumber.command.status.successful", new Object [] {new Formatter().format("%.2f", ((double)volume)/1024), "Go", inputs.get(3), date, "31-05-2018 a 23:59"}, null, (language == 2) ? Locale.ENGLISH : Locale.FRENCH), ussd.getMsisdn(), i18n.getMessage("Bnumber.command.status.successful", new Object [] {new Formatter().format("%.2f", ((double)volume)/1024), "Go", ussd.getMsisdn(), date, "31-05-2018 a 23:59"}, null, null), inputs.get(3), productProperties.getSms_notifications_header());*/
-								// endStep(dao, ussd, modele, productProperties, i18n.getMessage("Anumber.command.status.successful", new Object [] {new Formatter().format("%.2f", ((double)volume)/1024), "Go", inputs.get(3), date, "05-10-2018 a 23:59"}, null, (language == 2) ? Locale.ENGLISH : Locale.FRENCH), ussd.getMsisdn(), i18n.getMessage("Bnumber.command.status.successful", new Object [] {new Formatter().format("%.2f", ((double)volume)/1024), "Go", ussd.getMsisdn(), date, "05-10-2018 a 23:59"}, null, null), inputs.get(3), productProperties.getSms_notifications_header());
-								endStep(dao, ussd, modele, productProperties, i18n.getMessage("Anumber.command.status.successful", new Object [] {new Formatter().format("%.2f", ((double)volume)/1024), "Go", inputs.get(3), date, da_expires_in}, null, (language == 2) ? Locale.ENGLISH : Locale.FRENCH), ussd.getMsisdn(), i18n.getMessage("Bnumber.command.status.successful", new Object [] {new Formatter().format("%.2f", ((double)volume)/1024), "Go", ussd.getMsisdn(), date, da_expires_in}, null, null), inputs.get(3), productProperties.getSms_notifications_header());
+								/*endStep(dao, ussd, modele, productProperties, i18n.getMessage("Anumber.command.status.successful", new Object [] {new Formatter().format("%.2f", ((double)volume)/1024), "Go", inputs.get(3), date, "31-05-2018 a 23:59"}, null, (language == 2) ? Locale.ENGLISH : Locale.FRENCH), ussd.getMsisdn(), i18n.getMessage("Bnumber.command.status.successful", new Object [] {new Formatter().format("%.2f", ((double)volume)/1024), "Go", ussd.getMsisdn(), date, "31-05-2018 a 23:59"}, null, null), ((((productProperties.getMcc() + "").length() + productProperties.getMsisdn_length()) == (inputs.get(3).length())) ? inputs.get(3) : (productProperties.getMcc() + "" + inputs.get(3))), productProperties.getSms_notifications_header());*/
+								// endStep(dao, ussd, modele, productProperties, i18n.getMessage("Anumber.command.status.successful", new Object [] {new Formatter().format("%.2f", ((double)volume)/1024), "Go", inputs.get(3), date, "05-10-2018 a 23:59"}, null, (language == 2) ? Locale.ENGLISH : Locale.FRENCH), ussd.getMsisdn(), i18n.getMessage("Bnumber.command.status.successful", new Object [] {new Formatter().format("%.2f", ((double)volume)/1024), "Go", ussd.getMsisdn(), date, "05-10-2018 a 23:59"}, null, null), ((((productProperties.getMcc() + "").length() + productProperties.getMsisdn_length()) == (inputs.get(3).length())) ? inputs.get(3) : (productProperties.getMcc() + "" + inputs.get(3))), productProperties.getSms_notifications_header());
+								endStep(dao, ussd, modele, productProperties, i18n.getMessage("Anumber.command.status.successful", new Object [] {new Formatter().format("%.2f", ((double)volume)/1024), "Go", inputs.get(3), date, da_expires_in}, null, (language == 2) ? Locale.ENGLISH : Locale.FRENCH), ussd.getMsisdn(), i18n.getMessage("Bnumber.command.status.successful", new Object [] {new Formatter().format("%.2f", ((double)volume)/1024), "Go", ussd.getMsisdn(), date, da_expires_in}, null, null), ((((productProperties.getMcc() + "").length() + productProperties.getMsisdn_length()) == (inputs.get(3).length())) ? inputs.get(3) : (productProperties.getMcc() + "" + inputs.get(3))), productProperties.getSms_notifications_header());
 							}
 							else {
-								/*endStep(dao, ussd, modele, productProperties, i18n.getMessage("Anumber.command.status.successful", new Object [] {volume, "Mo", inputs.get(3), date, "31-05-2018 a 23:59"}, null, null), ussd.getMsisdn(), i18n.getMessage("Bnumber.command.status.successful", new Object [] {volume, "Mo", ussd.getMsisdn(), date, "31-05-2018 a 23:59"}, null, (language == 2) ? Locale.ENGLISH : Locale.FRENCH), inputs.get(3), productProperties.getSms_notifications_header());*/
-								// endStep(dao, ussd, modele, productProperties, i18n.getMessage("Anumber.command.status.successful", new Object [] {volume, "Mo", inputs.get(3), date, "05-10-2018 a 23:59"}, null, null), ussd.getMsisdn(), i18n.getMessage("Bnumber.command.status.successful", new Object [] {volume, "Mo", ussd.getMsisdn(), date, "05-10-2018 a 23:59"}, null, (language == 2) ? Locale.ENGLISH : Locale.FRENCH), inputs.get(3), productProperties.getSms_notifications_header());
-								endStep(dao, ussd, modele, productProperties, i18n.getMessage("Anumber.command.status.successful", new Object [] {volume, "Mo", inputs.get(3), date, da_expires_in}, null, null), ussd.getMsisdn(), i18n.getMessage("Bnumber.command.status.successful", new Object [] {volume, "Mo", ussd.getMsisdn(), date, da_expires_in}, null, (language == 2) ? Locale.ENGLISH : Locale.FRENCH), inputs.get(3), productProperties.getSms_notifications_header());
+								/*endStep(dao, ussd, modele, productProperties, i18n.getMessage("Anumber.command.status.successful", new Object [] {volume, "Mo", inputs.get(3), date, "31-05-2018 a 23:59"}, null, null), ussd.getMsisdn(), i18n.getMessage("Bnumber.command.status.successful", new Object [] {volume, "Mo", ussd.getMsisdn(), date, "31-05-2018 a 23:59"}, null, (language == 2) ? Locale.ENGLISH : Locale.FRENCH), ((((productProperties.getMcc() + "").length() + productProperties.getMsisdn_length()) == (inputs.get(3).length())) ? inputs.get(3) : (productProperties.getMcc() + "" + inputs.get(3))), productProperties.getSms_notifications_header());*/
+								// endStep(dao, ussd, modele, productProperties, i18n.getMessage("Anumber.command.status.successful", new Object [] {volume, "Mo", inputs.get(3), date, "05-10-2018 a 23:59"}, null, null), ussd.getMsisdn(), i18n.getMessage("Bnumber.command.status.successful", new Object [] {volume, "Mo", ussd.getMsisdn(), date, "05-10-2018 a 23:59"}, null, (language == 2) ? Locale.ENGLISH : Locale.FRENCH), ((((productProperties.getMcc() + "").length() + productProperties.getMsisdn_length()) == (inputs.get(3).length())) ? inputs.get(3) : (productProperties.getMcc() + "" + inputs.get(3))), productProperties.getSms_notifications_header());
+								endStep(dao, ussd, modele, productProperties, i18n.getMessage("Anumber.command.status.successful", new Object [] {volume, "Mo", inputs.get(3), date, da_expires_in}, null, null), ussd.getMsisdn(), i18n.getMessage("Bnumber.command.status.successful", new Object [] {volume, "Mo", ussd.getMsisdn(), date, da_expires_in}, null, (language == 2) ? Locale.ENGLISH : Locale.FRENCH), ((((productProperties.getMcc() + "").length() + productProperties.getMsisdn_length()) == (inputs.get(3).length())) ? inputs.get(3) : (productProperties.getMcc() + "" + inputs.get(3))), productProperties.getSms_notifications_header());
 							}
 						}
 						else {

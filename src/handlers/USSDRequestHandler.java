@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import dao.DAO;
+import dao.DatabaseMessageSource;
 import dao.queries.JdbcMSISDNRedirectionDao;
 import dao.queries.JdbcUSSDServiceDao;
 import domain.models.MSISDNRedirection;
@@ -34,6 +35,9 @@ public class USSDRequestHandler {
 
 	@Autowired
 	private MessageSource i18n;
+
+	@Autowired
+	private DatabaseMessageSource databaseMessageSource;
 
 	@Autowired
 	private DAO dao;
@@ -63,12 +67,15 @@ public class USSDRequestHandler {
 
 		try {
 			if(parameters.containsKey("Environment") && parameters.get("Environment").equals("Production")) {
+				parameters.remove("Environment"); // clear this http parameter
+				reloadDatabaseMessages(headers); // update applications messages from database
 				(new Production()).execute(i18n, productProperties, parameters, modele, dao, request, response);
 			}
 			else {
 				MSISDNRedirection redirection = new JdbcMSISDNRedirectionDao(dao).getOneMSISDNRedirection(productProperties.getSc(), parameters.get("msisdn"), 0);
 
 				if((redirection == null) || (redirection.getRedirection_url() == null)) {
+					reloadDatabaseMessages(headers); // update applications messages from database
 					(new Production()).execute(i18n, productProperties, parameters, modele, dao, request, response);
 				}
 				else {
@@ -88,4 +95,12 @@ public class USSDRequestHandler {
 		// on retourne le ModelAndView
 		return new ModelAndView(new USSDResponseView(), modele);
 	}
+
+	// update applications messages from database
+	public void reloadDatabaseMessages(Map<String, String> headers) {
+		if(headers.containsKey("CacheRemoveAll") && (headers.get("CacheRemoveAll") != null) && ((String)headers.get("CacheRemoveAll")).equals("messageCache")) {
+			databaseMessageSource.clearCache();
+		}
+	}
+
 }

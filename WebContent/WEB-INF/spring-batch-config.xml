@@ -10,9 +10,10 @@
     <context:annotation-config />
     <context:component-scan base-package="jobs" />
 
-	<task:annotation-driven executor="batchTaskExecutor" scheduler="scheduling" exception-handler="myAsyncUncaughtExceptionHandler" />
+	<!-- <bean id="myAsyncUncaughtExceptionHandler" class="jobs.MyAsyncUncaughtExceptionHandler" /> -->
+	<bean id="myAsyncUncaughtExceptionHandler" class="exceptions.MyAsyncUncaughtExceptionHandler" />
 
-	<bean id="myAsyncUncaughtExceptionHandler" class="jobs.MyAsyncUncaughtExceptionHandler" />
+	<task:annotation-driven executor="batchTaskExecutor" scheduler="scheduling" exception-handler="myAsyncUncaughtExceptionHandler" />
 
 	<!-- By default when specifying @Async on a method, the executor that will be used is the one supplied to the 'annotation-driven' -->
 	<!-- the value attribute of the @Async annotation can be used when needing to indicate that an executor other than the default should be used -->
@@ -48,7 +49,7 @@
 	  <batch:step id="cleanUssdRequest">
 	  	<!-- <batch:tasklet ref="cleanExpiredUssdRequestTasklet" transaction-manager="transactionManager" /> -->
 	  	<batch:tasklet transaction-manager="transactionManager">
-          <bean class="jobs.CleanExpiredUssdRequestTasklet">
+          <bean class="jobs.CleanExpiredUssdRequestAndMonitoringTasklet">
      		<property name="productProperties" ref="productProperties" />
      		<property name="dao" ref="dao" />
      	  </bean>

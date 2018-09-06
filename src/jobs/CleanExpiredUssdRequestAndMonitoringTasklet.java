@@ -3,6 +3,8 @@ package jobs;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -13,7 +15,7 @@ import dao.DAO;
 import product.ProductProperties;
 
 /*@Component("cleanExpiredUssdRequestTasklet")*/
-public class CleanExpiredUssdRequestTasklet implements Tasklet {
+public class CleanExpiredUssdRequestAndMonitoringTasklet implements Tasklet {
 
 	/*@Autowired*/
 	private DAO dao;
@@ -21,7 +23,7 @@ public class CleanExpiredUssdRequestTasklet implements Tasklet {
 	/*@Autowired*/
 	private ProductProperties productProperties;
 
-	public CleanExpiredUssdRequestTasklet() {
+	public CleanExpiredUssdRequestAndMonitoringTasklet() {
 		
 	}
 
@@ -41,21 +43,13 @@ public class CleanExpiredUssdRequestTasklet implements Tasklet {
 		this.productProperties = productProperties;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
 		// TODO Auto-generated method stub
 
 		try {
-			// test AIR Connection
-			productProperties.setAir_preferred_host((byte) (new AIRRequest(productProperties.getAir_hosts(), productProperties.getAir_io_sleep(), productProperties.getAir_io_timeout(), productProperties.getAir_io_threshold(), productProperties.getAir_preferred_host())).testConnection(productProperties.getAir_test_connection_msisdn(), productProperties.getAir_preferred_host()));
-
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			Date now = new Date();
-			now.setMinutes(now.getMinutes()-5);
-
-			// System.out.println("DELETE FROM MTN_DATA_MONTH_USSD_EBA WHERE LAST_UPDATE_TIME < TIMESTAMP '" + sdf.format(now) + "'");
-			dao.getJdbcTemplate().update("DELETE FROM MTN_DATA_MONTH_USSD_EBA WHERE LAST_UPDATE_TIME < TIMESTAMP '" + sdf.format(now) + "'");
+			checkAirConnectivity();
+			cleanExpiredUssdRequests();
 
 			stepContribution.setExitStatus(ExitStatus.COMPLETED);
 			return RepeatStatus.FINISHED;
@@ -65,6 +59,35 @@ public class CleanExpiredUssdRequestTasklet implements Tasklet {
 		}
 
 		return null;
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void cleanExpiredUssdRequests() {
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Date now = new Date();
+			now.setMinutes(now.getMinutes()-5);
+
+			// System.out.println("DELETE FROM MTN_DATA_MONTH_USSD_EBA WHERE LAST_UPDATE_TIME < TIMESTAMP '" + sdf.format(now) + "'");
+			dao.getJdbcTemplate().update("DELETE FROM MTN_DATA_MONTH_USSD_EBA WHERE LAST_UPDATE_TIME < TIMESTAMP '" + sdf.format(now) + "'");
+
+		} catch(Throwable th) {
+			
+		}
+	}
+	
+	public void checkAirConnectivity() {
+		try {
+			// test AIR Connection
+			productProperties.setAir_preferred_host((byte) (new AIRRequest(productProperties.getAir_hosts(), productProperties.getAir_io_sleep(), productProperties.getAir_io_timeout(), productProperties.getAir_io_threshold(), productProperties.getAir_preferred_host())).testConnection(productProperties.getAir_test_connection_msisdn(), productProperties.getAir_preferred_host()));
+			if(productProperties.getAir_preferred_host() == -1) {
+				Logger logger = LogManager.getLogger("logging.log4j.AirAvailabilityLogger");
+				logger.error("ALL AIR NODES ARE DOWN !");
+			}
+
+		} catch(Throwable th) {
+			
+		}
 	}
 
 }
