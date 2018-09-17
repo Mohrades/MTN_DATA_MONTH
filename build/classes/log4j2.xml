@@ -198,7 +198,8 @@
       <AppenderRef ref="ProcessingOutputStream" />
     </Logger>
 
-    <Root level="error">
+    <!-- <Root level="error"> -->
+    <Root level="INFO">
       <AppenderRef ref="STDOUT" />
     </Root>
   </Loggers>
