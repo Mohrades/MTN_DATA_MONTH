@@ -167,7 +167,7 @@ public class InputHandler {
 				endStep(dao, ussd, modele, productProperties, i18n.getMessage("status", new Object [] {new Formatter().format("%.2f", ((double)(balance.getAccountValue()/(10*100)))/1024), "Go", (new SimpleDateFormat("dd/MM/yyyy 'a' HH:mm")).format(balance.getExpiryDate())}, null, (language == 2) ? Locale.ENGLISH : Locale.FRENCH), null, null, null, null);
 			}
 			else {
-				endStep(dao, ussd, modele, productProperties, i18n.getMessage("status", new Object [] {balance.getAccountValue()/(10*100), "Mo", (new SimpleDateFormat("dd/MM/yyyy 'a' HH:mm")).format(balance.getExpiryDate())}, null, (language == 2) ? Locale.ENGLISH : Locale.FRENCH), null, null, null, null);
+				endStep(dao, ussd, modele, productProperties, i18n.getMessage("status", new Object [] {((balance.getAccountValue()/(10*100)) + ""), "Mo", (new SimpleDateFormat("dd/MM/yyyy 'a' HH:mm")).format(balance.getExpiryDate())}, null, (language == 2) ? Locale.ENGLISH : Locale.FRENCH), null, null, null, null);
 			}
 		}
 	}

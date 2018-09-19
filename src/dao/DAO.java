@@ -13,6 +13,7 @@ public class DAO  extends JdbcDaoSupport implements Serializable{
 	
 	public DAO() {
 		// JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+
 	}
 
 	public void setDataSource(ComboPooledDataSource dataSource) {

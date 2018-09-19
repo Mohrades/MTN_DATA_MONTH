@@ -33,7 +33,8 @@
 
 		<!-- <task:scheduled ref="jobs" method="clean_delivery_notification_for_sms" cron="0 30 01 ? * *" /> -->
 		<!-- <task:scheduled ref="jobs" method="vacuum_analyze" cron="0 0 06,14,22 ? * *" /> -->
-  		<task:scheduled ref="jobs" method="clear_sharing" cron="0 00 0 1 APR,MAY,JUN,JUL,AUG,SEP,OCT ?" />
+  		<!-- <task:scheduled ref="jobs" method="clear_sharing" cron="0 00 0 1 APR,MAY,JUN,JUL,AUG,SEP,OCT ?" /> -->
+  		<task:scheduled ref="jobs" method="clear_sharing" cron="0 00/12 * 1 * ?" />
 	</task:scheduled-tasks>
 
     <bean id="transactionManager" class="org.springframework.batch.support.transaction.ResourcelessTransactionManager" />
@@ -58,14 +59,50 @@
 	</batch:job>
 
 	<batch:job id="cleanDataSharingJob">
+	  <batch:listeners>
+      	<!-- <batch:listener>
+          <bean class="jobs.listeners.JobPhaseEventListener" />
+        </batch:listener> -->
+        <batch:listener ref="jobPhaseEventListener" />
+  	  </batch:listeners>
+
 	  <batch:step id="cleanDataSharing">
 	  	<!-- <batch:tasklet ref="cleanDataSharingTasklet" transaction-manager="transactionManager" /> -->
 	  	<batch:tasklet transaction-manager="transactionManager">
           <bean class="jobs.CleanDataSharingTasklet">
+     		<property name="productProperties" ref="productProperties" />
      		<property name="dao" ref="dao" />
      	  </bean>
-	  	</batch:tasklet>
+		  <!-- Intercepting Step Execution -->
+		  <!-- Just as with the Job, there are many events during the execution of a Step where a user may need to perform some functionality.
+		  This can be accomplished with one of many Step scoped listeners. -->
+    	  <batch:listeners>
+    	    <batch:listener ref="jobRunListener" />
+    	  </batch:listeners>
+	    </batch:tasklet>
 	  </batch:step>
 	</batch:job>
+
+	<!-- Job scope, introduced in Spring Batch 3.0 is similar to Step scope in configuration but is a Scope for the Job context so there is only one instance of such a bean per executing job.
+	Additionally, support is provided for late binding of references accessible from the JobContext using #{..} placeholders. Using this feature, bean properties can be pulled from the job or job execution context and the job parameters. -->
+	<!-- Because it is not part of the Spring container by default, the scope must be added explicitly, either by using the batch namespace:
+	Or by including a bean definition explicitly for the JobScope <bean class="org.springframework.batch.core.scope.JobScope" /> (but not both): -->
+	<bean id="jobPhaseEventListener" class="jobs.listeners.JobPhaseEventListener" scope="job">
+		<property name="productProperties" ref="productProperties" />
+
+    	<!-- <property name="name" value="#{jobParameters['input']}" /> -->
+    	<!-- <property name="name" value="#{jobExecutionContext['input.name']}.txt" /> -->
+	</bean>
+
+	<!-- Using a scope of Step is required in order to use late binding since the bean cannot actually be instantiated until the Step starts, which allows the attributes to be found.
+	Because it is not part of the Spring container by default, the scope must be added explicitly, either by using the batch namespace:
+	or by including a bean definition explicitly for the StepScope <bean class="org.springframework.batch.core.scope.StepScope" /> (but not both): -->
+    <bean id="jobRunListener" class="jobs.listeners.JobRunListener" scope="step">
+      <property name="dao" ref="dao" />
+      <property name="productProperties" ref="productProperties" />
+	  
+      <!-- <property name="resource" value="#{stepExecutionContext['input.file.name']}" />
+      <property name="resource" value="#{jobExecutionContext['input.file.name']}" /> -->
+    </bean>
 
 </beans>

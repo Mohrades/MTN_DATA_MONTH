@@ -68,6 +68,20 @@
       </Layout>
     </Appender>
 
+    <Appender type="RollingFile" name="JobExecutionOutputStream" fileName="${web:rootDir}/JOBS/Execution.log" filePattern="${web:rootDir}/JOBS/$${date:yyyy-MM}/Execution-%d{MM-dd-yyyy}-%i.log.gz">
+	  <Policies>
+	  	<!-- <OnStartupTriggeringPolicy /> -->
+	  	<TimeBasedTriggeringPolicy interval="1" modulate="true" />
+        <SizeBasedTriggeringPolicy size="05 MB" />
+	  </Policies>
+
+	  <DefaultRolloverStrategy max="7" />
+
+      <Layout type="PatternLayout">
+        <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-8level %logger{36} - %msg%n</Pattern>
+      </Layout>
+    </Appender>
+
 	<!-- <Appender type="RollingFile" name="AirRequestOutputStream" fileName="${AirRequestFileOutputStream}" filePattern="logs/AIR/$${date:yyyy-MM}/TIMEOUT-%d{MM-dd-yyyy}-%i.log.gz"> -->
     <Appender type="RollingFile" name="AirRequestOutputStream" fileName="${web:rootDir}/logs/AIR/TIMEOUT.log" filePattern="${web:rootDir}/logs/AIR/$${date:yyyy-MM}/TIMEOUT-%d{MM-dd-yyyy}-%i.log.gz">
 	  <Policies>
@@ -190,6 +204,10 @@
       <AppenderRef ref="SubmitSmOutputStream" />
     </Logger>
 
+  	<Logger name="logging.log4j.JobExecutionLogger" level="INFO" additivity="false">
+      <AppenderRef ref="JobExecutionOutputStream" />
+    </Logger>
+
   	<Logger name="logging.log4j.TracesLogger" level="TRACE" additivity="false">
       <AppenderRef ref="TracesOutputStream" />
     </Logger>
@@ -198,8 +216,8 @@
       <AppenderRef ref="ProcessingOutputStream" />
     </Logger>
 
-    <!-- <Root level="error"> -->
-    <Root level="INFO">
+    <Root level="error">
+    <!-- <Root level="INFO"> -->
       <AppenderRef ref="STDOUT" />
     </Root>
   </Loggers>
