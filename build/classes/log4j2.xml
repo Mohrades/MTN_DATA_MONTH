@@ -68,7 +68,7 @@
       </Layout>
     </Appender>
 
-    <Appender type="RollingFile" name="JobExecutionOutputStream" fileName="${web:rootDir}/JOBS/Execution.log" filePattern="${web:rootDir}/JOBS/$${date:yyyy-MM}/Execution-%d{MM-dd-yyyy}-%i.log.gz">
+    <Appender type="RollingFile" name="JobExecutionOutputStream" fileName="${web:rootDir}/logs/JOBS/Execution.log" filePattern="${web:rootDir}/logs/JOBS/$${date:yyyy-MM}/Execution-%d{MM-dd-yyyy}-%i.log.gz">
 	  <Policies>
 	  	<!-- <OnStartupTriggeringPolicy /> -->
 	  	<TimeBasedTriggeringPolicy interval="1" modulate="true" />
