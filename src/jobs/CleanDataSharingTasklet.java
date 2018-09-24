@@ -52,7 +52,8 @@ public class CleanDataSharingTasklet implements Tasklet {
 
 
 			USSDService service = new JdbcUSSDServiceDao(dao).getOneUSSDService(productProperties.getSc());
-			Date now = new Date();
+			// Date now = (chunkContext.getStepContext().getStepExecution().getStartTime() == null) ? new Date() : (Date) chunkContext.getStepContext().getStepExecution().getStartTime().clone();
+			Date now = (chunkContext.getStepContext().getStepExecution().getJobExecution().getStartTime() == null) ? new Date() : (Date) chunkContext.getStepContext().getStepExecution().getJobExecution().getStartTime().clone();
 
 			/*The first way to stop execution is to throw an exception. This works all the time, unless you configured the job to skip some exceptions in a chunk-oriented step!*/
 			// Stopping a job from a tasklet : Setting the stop flag in a tasklet is straightforward;
