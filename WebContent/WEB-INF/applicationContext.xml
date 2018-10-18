@@ -154,7 +154,7 @@
         </property>
 	</bean> -->
 
-   	<bean id="databaseMessageSource" class="dao.DatabaseMessageSource">
+   	<bean id="jdbcResourceBundleMessageSourceDao" class="dao.queries.JdbcResourceBundleMessageSourceDao">
    		<constructor-arg index="0" type="dao.DAO">
    			<ref bean="dao" />
    		</constructor-arg>
@@ -166,8 +166,8 @@
 	<!-- <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource"> -->
 	<!-- You have to implement custom message source. It's a class that extends AbstractMessageSource and implements the abstract resolveCode(java.lang.String, java.util.Locale) method	 -->
 	<bean id="messageSource" class="com.util.DatabaseBackedResourceBundleMessageSource">
-   		<constructor-arg index="0" type="dao.DatabaseMessageSource">
-   			<ref bean="databaseMessageSource" />
+   		<constructor-arg index="0" type="dao.queries.JdbcResourceBundleMessageSourceDao">
+   			<ref bean="jdbcResourceBundleMessageSourceDao" />
    		</constructor-arg>
 
 		<property name="basenames">
